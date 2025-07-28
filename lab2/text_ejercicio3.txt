@@ -1,0 +1,10 @@
+a(b|c)*
+(a|b)c*d+
+ab+c?de
+(a|b)(c|d)*
+(a|b|c)*(d|e)+f?
+a{1,3}b+c?
+a(b|c){2,4}d*
+(ab*c|de+f)g?h
+a\(b\)c*d
+a(b(c|d)*e)f+

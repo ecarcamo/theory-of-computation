@@ -32,31 +32,31 @@ def verificar_balanceo(expresion):
     pasos.append(f"Todo nice, Pila vacía → BALANCEADA")
     return True, pasos
 
-if __name__ == "__main__":
-    ruta_archivo = "text_ejercicio2.txt"
-    
-    try:
-        with open(ruta_archivo, 'r', encoding='utf-8') as archivo:
-            lineas = [linea.strip() for linea in archivo if linea.strip()]
-            
-        print(f"Procesando archivo: {ruta_archivo}")
-        print(f"Encontradas {len(lineas)} expresiones para analizar.\n")
+
+ruta_archivo = "text_ejercicio2.txt"
+
+try:
+    with open(ruta_archivo, 'r', encoding='utf-8') as archivo:
+        lineas = [linea.strip() for linea in archivo if linea.strip()]
         
-        for index, linea in enumerate(lineas):
-            print(f"\n{'=' * 70}")
-            print(f"Expresión {index + 1}: {linea}")
-            print(f"{'-' * 70}")
+    print(f"Procesando archivo: {ruta_archivo}")
+    print(f"Encontradas {len(lineas)} expresiones para analizar.\n")
+    
+    for index, linea in enumerate(lineas):
+        print(f"\n{'=' * 70}")
+        print(f"Expresión {index + 1}: {linea}")
+        print(f"{'-' * 70}")
+        
+        balanceada, pasos = verificar_balanceo(linea)
+        
+        for paso in pasos:
+            print(paso)
             
-            balanceada, pasos = verificar_balanceo(linea)
+        print(f"{'-' * 70}")
+        estado = "BALANCEADA" if balanceada else "NO BALANCEADA"
+        print(f"Resultado: La expresión está {estado}")
             
-            for paso in pasos:
-                print(paso)
-                
-            print(f"{'-' * 70}")
-            estado = "BALANCEADA" if balanceada else "NO BALANCEADA"
-            print(f"Resultado: La expresión está {estado}")
-                
-    except FileNotFoundError:
-        print(f"Error: No se encontró el archivo '{ruta_archivo}'")
-    except Exception as e:
-        print(f"Error inesperado: {e}")
+except FileNotFoundError:
+    print(f"Error: No se encontró el archivo '{ruta_archivo}'")
+except Exception as e:
+    print(f"Error inesperado: {e}")
