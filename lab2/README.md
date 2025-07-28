@@ -52,4 +52,4 @@ Ver la ejecución y explicación de ambos ejercicios en el siguiente video:
 
 
 ## Ejercicios del inciso 1
-Ubicados en: 
+Ubicados en: https://github.com/ecarcamo/theory-of-computation/blob/main/lab2/Lab%202%20ejercicios%20.pdf 
