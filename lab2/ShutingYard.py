@@ -62,11 +62,11 @@ class ShuntingYard:
         if pila_operadores and pila_operadores[-1] == simbolo_apertura:
             pila_operadores.pop()
             pasos.append(f"Sacando '{simbolo_apertura}' de la pila: {pila_operadores}")
-            return resultado_procesar_simbolo
         else:
             pasos.append(f"Error: {self.mensaje_error[simbolo_cierre]}")
             resultado_procesar_simbolo = False
-            return resultado_procesar_simbolo
+    
+        return resultado_procesar_simbolo
     
     def convertir_a_postfix(self, expresion):
         expresion = self.insertar_concatenacion_explicita(expresion)
