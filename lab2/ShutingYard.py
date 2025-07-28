@@ -7,6 +7,20 @@ class ShuntingYard:
             '*': 3,  # Cero o más ocurrencias (alta precedencia)
             '+': 3   # Una o más ocurrencias (alta precedencia)
         }
+        
+        # Diccionario que mapea símbolos de cierre a sus correspondientes símbolos de apertura
+        self.simbolo_apertura = {
+            ')': '(',
+            ']': '[',
+            '}': '{'
+        }
+        
+        # Diccionario para errores
+        self.mensaje_error = {
+            ')': "Paréntesis desbalanceados",
+            ']': "Corchetes desbalanceados",
+            '}': "Llaves desbalanceadas"
+        }
     
     def insertar_concatenacion_explicita(self, expresion):
         resultado = []
@@ -33,6 +47,27 @@ class ShuntingYard:
                     
         return ''.join(resultado)
     
+    def procesar_simbolo_cierre(self, simbolo_cierre, pila_operadores, salida, pasos):
+        resultado_procesar_simbolo = True
+        
+        simbolo_apertura = self.simbolo_apertura[simbolo_cierre]
+        
+        # Desapilamos hasta encontrar el símbolo de apertura correspondiente
+        while pila_operadores and pila_operadores[-1] != simbolo_apertura:
+            operador = pila_operadores.pop()
+            salida.append(operador)
+            pasos.append(f"Sacando '{operador}' de la pila y agregando a la salida: {salida}")
+        
+        # Removemos el símbolo de apertura si existe
+        if pila_operadores and pila_operadores[-1] == simbolo_apertura:
+            pila_operadores.pop()
+            pasos.append(f"Sacando '{simbolo_apertura}' de la pila: {pila_operadores}")
+            return resultado_procesar_simbolo
+        else:
+            pasos.append(f"Error: {self.mensaje_error[simbolo_cierre]}")
+            resultado_procesar_simbolo = False
+            return resultado_procesar_simbolo
+    
     def convertir_a_postfix(self, expresion):
         expresion = self.insertar_concatenacion_explicita(expresion)
         
@@ -58,46 +93,10 @@ class ShuntingYard:
                 pasos.append(f"Agregando '{caracter}' a la pila: {pila_operadores}")
                 
             # Manejo de símbolos de cierre
-            elif caracter == ')':
-                # Desapilamos hasta encontrar el paréntesis de apertura
-                while pila_operadores and pila_operadores[-1] != '(':
-                    operador = pila_operadores.pop()
-                    salida.append(operador)
-                    pasos.append(f"Sacando '{operador}' de la pila y agregando a la salida: {salida}")
-                
-                # Removemos el paréntesis de apertura
-                if pila_operadores and pila_operadores[-1] == '(':
-                    pila_operadores.pop()  
-                    pasos.append(f"Sacando '(' de la pila: {pila_operadores}")
-                else:
-                    pasos.append("Error: Paréntesis desbalanceados")
-                    return "", pasos
-            
-            # Procesos similares para corchetes y llaves
-            elif caracter == ']':
-                while pila_operadores and pila_operadores[-1] != '[':
-                    operador = pila_operadores.pop()
-                    salida.append(operador)
-                    pasos.append(f"Sacando '{operador}' de la pila y agregando a la salida: {salida}")
-                
-                if pila_operadores and pila_operadores[-1] == '[':
-                    pila_operadores.pop()
-                    pasos.append(f"Sacando '[' de la pila: {pila_operadores}")
-                else:
-                    pasos.append("Error: Corchetes desbalanceados")
-                    return "", pasos
-            
-            elif caracter == '}':
-                while pila_operadores and pila_operadores[-1] != '{':
-                    operador = pila_operadores.pop()
-                    salida.append(operador)
-                    pasos.append(f"Sacando '{operador}' de la pila y agregando a la salida: {salida}")
-                
-                if pila_operadores and pila_operadores[-1] == '{':
-                    pila_operadores.pop()
-                    pasos.append(f"Sacando '{{' de la pila: {pila_operadores}")
-                else:
-                    pasos.append("Error: Llaves desbalanceadas")
+            elif caracter in self.simbolo_apertura:
+                resultado_procesar_simbolo = self.procesar_simbolo_cierre(caracter, pila_operadores, salida, pasos)
+
+                if not resultado_procesar_simbolo:
                     return "", pasos
             
             # Manejo de operadores
@@ -113,7 +112,7 @@ class ShuntingYard:
                 pila_operadores.append(caracter)
                 pasos.append(f"Agregando '{caracter}' a la pila: {pila_operadores}")
             
-            # Operandos (caracteres normales)
+            # Operandos
             else:
                 salida.append(caracter)
                 pasos.append(f"Agregando '{caracter}' a la salida: {salida}")
