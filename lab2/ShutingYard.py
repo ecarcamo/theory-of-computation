@@ -15,10 +15,10 @@ class ShuntingYard:
         self.simbolo_apertura = {')': '('}
         self.mensaje_error = {')': "Paréntesis desbalanceados"}
 
-    def get_precedence(self, c):
+    def obtener_precedencia(self, c):
         return self.precedencia.get(c, 6)  # 6 para operandos y cuantificadores {m,n}
 
-    def formateo_regex(self, regex):
+    def insercion_explicita_concatenacion(self, regex):
         resultado = []
         i = 0
         while i < len(regex):
@@ -63,7 +63,7 @@ class ShuntingYard:
         postfix = []
         stack = []
         pasos = []
-        formatted = self.formateo_regex(regex)
+        formatted = self.insercion_explicita_concatenacion(regex)
         pasos.append(f"Expresión con concatenación explícita: {formatted}")
         i = 0
         while i < len(formatted):
@@ -106,7 +106,7 @@ class ShuntingYard:
                     return "", pasos
             # Si es operador
             elif c in self.operadores or c == '.':
-                while (stack and self.get_precedence(stack[-1]) >= self.get_precedence(c)):
+                while (stack and self.obtener_precedencia(stack[-1]) >= self.obtener_precedencia(c)):
                     op = stack.pop()
                     postfix.append(op)
                     pasos.append(f"Sacando '{op}' de la pila y agregando a la salida: {postfix}")
