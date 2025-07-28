@@ -32,7 +32,9 @@ def verificar_balanceo(expresion):
     pasos.append(f"Todo nice, Pila vacía → BALANCEADA")
     return True, pasos
 
-def procesar_archivo(ruta_archivo):
+if __name__ == "__main__":
+    ruta_archivo = "text_ejercicio2.txt"
+    
     try:
         with open(ruta_archivo, 'r', encoding='utf-8') as archivo:
             lineas = [linea.strip() for linea in archivo if linea.strip()]
@@ -58,7 +60,3 @@ def procesar_archivo(ruta_archivo):
         print(f"Error: No se encontró el archivo '{ruta_archivo}'")
     except Exception as e:
         print(f"Error inesperado: {e}")
-
-if __name__ == "__main__":
-    ruta_archivo = "text_ejercicio2.txt"
-    procesar_archivo(ruta_archivo)
