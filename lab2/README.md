@@ -45,3 +45,8 @@ El algoritmo de Shunting Yard, propuesto por Edsger Dijkstra, es un método para
 
 ---
 
+## Demostración en video
+
+Ver la ejecución y explicación de ambos ejercicios en el siguiente video:  
+[https://youtu.be/GtQf2VY3VIA?si=6-jMwWpwnnw7EOAs](https://youtu.be/GtQf2VY3VIA?si=6-jMwWpwnnw7EOAs)
+
