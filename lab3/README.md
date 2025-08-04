@@ -17,7 +17,12 @@ Este lab implementa un conversor de expresiones regulares (usado en el lab2) des
    sudo apt install graphviz
    ```
 
-3. Dependencias de Python:
+3. Crear un ambiente virtual de python:
+   ```bash
+   python3 -m venv venv
+   ```
+
+4. Dependencias de Python:
    ```bash
    pip install -r requirements.txt
    ```
@@ -41,12 +46,11 @@ lab3/
 ├── data/
 │   └── expressions.txt      # Archivo con expresiones regulares a procesar
 ├── src/
-│   ├── __init__.py
 │   ├── shunting_yard.py     # Implementación del algoritmo Shunting Yard
+│   ├── balance_verifier.py  # Verificador de la expresión
 │   ├── ast_builder.py       # Constructor del árbol sintáctico
 │   └── tree_visualizer.py   # Visualizador del árbol
-├── output/
-│   └── trees/               # Directorio donde se guardan las imágenes generadas
+├── output/                  # Directorio donde se guardan las imágenes generadas
 ├── main.py                  # Punto de entrada del programa
 └── requirements.txt         # Dependencias del proyecto
 ```
@@ -71,8 +75,8 @@ El programa realiza las siguientes acciones:
 1. Lee expresiones regulares desde [`data/expressions.txt`](data/expressions.txt )
 2. Convierte cada expresión de notación infix a postfix usando el algoritmo Shunting Yard
 3. Construye un árbol sintáctico abstracto (AST) a partir de la notación postfix
-4. Visualiza el árbol mediante Graphviz y guarda la imagen en `output/trees/`
-5. Muestra el proceso paso a paso en la consola
+4. Visualiza el árbol mediante Graphviz y guarda la imagen en `output/`
+5. Muestra el proceso de la conversión de shuting yard  y AST paso a paso en la consola
 
 ## Solución de problemas
 
