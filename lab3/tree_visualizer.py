@@ -12,14 +12,12 @@ class TreeVisualizer:
         self.root = root
 
     def visualize(self, root=None):
-        if root is None:
-            root = self.root
-        
+        root = root if root is not None else self.root
         if root is None:
             return None
             
         dot = Digraph(comment='AST')
-        dot.attr(rankdir='TB')  # Top to Bottom
+        dot.attr(rankdir='TB') 
         dot.attr('node', shape='circle', style='filled', fillcolor='lightblue')
         
         self._add_nodes(dot, root)
@@ -43,7 +41,6 @@ class TreeVisualizer:
                 self._add_nodes(dot, node.right)
 
     def _escape_label(self, label):
-        """Escapa caracteres especiales para Graphviz"""
         special_chars = {
             '|': '\\|',
             '.': '\\.',

@@ -20,8 +20,8 @@ class Ast_Builder:
 
     def build_ast(self, postfix):
         stack = []
-        unary_operators = {'*', '+', '?'}  # Operadores unarios
-        binary_operators = {'|', '.', '^'}  # Operadores binarios
+        unary_operators = {'*', '+', '?'}  # Operadores con solo 1 hijo
+        binary_operators = {'|', '.', '^'}  # Operadores con máximo 2 hijos
         
         i = 0
         while i < len(postfix):
