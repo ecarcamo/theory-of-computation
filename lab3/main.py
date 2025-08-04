@@ -38,11 +38,12 @@ def main():
                 
                 if postfix:
                     print(f"\nResultado postfix: {postfix}")
-                    
-                    # Empieza el proceso de contrucción del AST
-                    ast = ast_tree.build_ast(postfix)
+                    # Empieza el proceso de construcción del AST y guarda los pasos
+                    ast, pasos_ast = ast_tree.build_ast(postfix)
+                    print("\nPasos para construir el AST:")
+                    for paso in pasos_ast:
+                        print(paso)
                     if ast:
-                        # lo visualizamos en un png
                         visualizer = TreeVisualizer(ast)
                         output_path = f"output/ast_{i + 1}"
                         visualizer.save(output_path)

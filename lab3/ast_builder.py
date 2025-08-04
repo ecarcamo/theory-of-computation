@@ -18,16 +18,16 @@ class Ast_Builder:
     def __init__(self):
         pass
 
-    def build_ast(self, postfix):
+    def build_ast(self, postfix, pasos=None):
+        if pasos is None:
+            pasos = []
         stack = []
-        unary_operators = {'*', '+', '?'}  # Operadores con solo 1 hijo
-        binary_operators = {'|', '.', '^'}  # Operadores con máximo 2 hijos
+        unary_operators = {'*', '+', '?'}
+        binary_operators = {'|', '.', '^'}
         
         i = 0
         while i < len(postfix):
             token = postfix[i]
-            
-            # Manejar cuantificadores de rango como {2,5}
             if token == '{':
                 range_token = '{'
                 i += 1
@@ -37,16 +37,15 @@ class Ast_Builder:
                 if i < len(postfix):
                     range_token += '}'
                 token = range_token
-            
+
             if token in unary_operators or token.startswith('{'):
-                # Operador unario - toma un operando
                 if stack:
                     operand = stack.pop()
                     node = TreeNode(token)
                     node.left = operand
                     stack.append(node)
+                    pasos.append(f"Operador unario '{token}': Apila nodo con hijo izquierdo '{operand.value}'")
             elif token in binary_operators:
-                # Operador binario - toma dos operandos
                 if len(stack) >= 2:
                     right = stack.pop()
                     left = stack.pop()
@@ -54,11 +53,12 @@ class Ast_Builder:
                     node.left = left
                     node.right = right
                     stack.append(node)
+                    pasos.append(f"Operador binario '{token}': Apila nodo con hijos '{left.value}', '{right.value}'")
             else:
-                # Operando - crear nodo hoja
                 node = TreeNode(token)
                 stack.append(node)
-            
+                pasos.append(f"Operando '{token}': Apila nodo hoja")
             i += 1
-    
-        return stack[0] if stack else None
+
+        pasos.append(f"AST final en la cima de la pila: {stack[0] if stack else 'None'}")
+        return stack[0] if stack else None, pasos
