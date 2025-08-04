@@ -1,3 +1,5 @@
+[![Video explicativo](https://img.youtube.com/vi/4f37_EjS5sI/0.jpg)](https://youtu.be/4f37_EjS5sI)
+
 # Conversor de Expresiones Regulares a Árbol Sintáctico
 
 Este lab implementa un conversor de expresiones regulares (usado en el lab2) desde notación infix a postfix utilizando el algoritmo de Shunting Yard, y posteriormente construye un árbol sintáctico abstracto (AST) a partir de la expresión postfix. Finalmente, visualiza el árbol generado mediante Graphviz.
