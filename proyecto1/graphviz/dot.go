@@ -4,11 +4,11 @@ package graphviz
 
 import (
 	"fmt"
-	"proyecto1/thompson"
 	"os"
 	"os/exec"
-	"sort"
 	"proyecto1/nfa"
+	"proyecto1/thompson"
+	"sort"
 )
 
 // WriteDOT writes the NFA to a DOT file at the specified path.
@@ -65,39 +65,52 @@ func WriteDOT(nfa *thompson.NFA, path string) error {
 }
 
 func WriteDOTDFA(dfa *nfa.DFA, path string) error {
-    f, err := os.Create(path)
-    if err != nil {
-        return err
-    }
-    defer f.Close()
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
 
-    fmt.Fprintln(f, "digraph DFA {")
-    fmt.Fprintln(f, "  rankdir=LR;")
-    fmt.Fprintln(f, "  node [shape=circle];")
-    fmt.Fprintf(f, "  s [shape=point];\n")
-    fmt.Fprintf(f, "  s -> %s;\n", dfa.Start)
+	// Asignar letras a subconjuntos
+	letters := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	subsetNames := map[string]string{}
+	for i, state := range dfa.States {
+		subsetNames[state] = string(letters[i])
+	}
 
-    // Estados de aceptación
-    for state := range dfa.Accepting {
-        fmt.Fprintf(f, "  %s [shape=doublecircle];\n", state)
-    }
+	// Comentarios con definiciones
+	fmt.Fprintln(f, "// Subconjuntos DFA:")
+	for state, letra := range subsetNames {
+		fmt.Fprintf(f, "// %s = %s\n", letra, state)
+	}
 
-    // Otros estados
-    for _, state := range dfa.States {
-        if !dfa.Accepting[state] {
-            fmt.Fprintf(f, "  %s;\n", state)
-        }
-    }
+	fmt.Fprintln(f, "digraph DFA {")
+	fmt.Fprintln(f, "  rankdir=LR;")
+	fmt.Fprintln(f, "  node [shape=circle];")
+	fmt.Fprintf(f, "  s [shape=point];\n")
+	fmt.Fprintf(f, "  s -> %s;\n", subsetNames[dfa.Start])
 
-    // Transiciones
-    for from, trans := range dfa.Transitions {
-        for sym, to := range trans {
-            fmt.Fprintf(f, "  %s -> %s [label=\"%c\"];\n", from, to, sym)
-        }
-    }
+	// Estados de aceptación
+	for state := range dfa.Accepting {
+		fmt.Fprintf(f, "  %s [shape=doublecircle];\n", subsetNames[state])
+	}
 
-    fmt.Fprintln(f, "}")
-    return nil
+	// Otros estados
+	for _, state := range dfa.States {
+		if !dfa.Accepting[state] {
+			fmt.Fprintf(f, "  %s;\n", subsetNames[state])
+		}
+	}
+
+	// Transiciones
+	for from, trans := range dfa.Transitions {
+		for sym, to := range trans {
+			fmt.Fprintf(f, "  %s -> %s [label=\"%c\"];\n", subsetNames[from], subsetNames[to], sym)
+		}
+	}
+
+	fmt.Fprintln(f, "}")
+	return nil
 }
 
 // GeneratePNGFromDot generates a PNG image from a DOT file using the 'dot' command.

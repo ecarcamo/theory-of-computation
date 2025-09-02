@@ -82,6 +82,9 @@ func NFAtoDFA(nfa *thompson.NFA, alphabet []rune) *DFA {
 		dfaAccepting[startName] = true
 	}
 
+	subsetNames := map[string]string{} // nombre del conjunto → letra
+	letters := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
 	for len(queue) > 0 {
 		currentSet := queue[0]
 		queue = queue[1:]
@@ -106,6 +109,8 @@ func NFAtoDFA(nfa *thompson.NFA, alphabet []rune) *DFA {
 			}
 			dfaTransitions[currentName][sym] = nextName
 		}
+		idx := len(subsetNames)
+		subsetNames[setName(currentSet)] = string(letters[idx])
 	}
 
 	return &DFA{

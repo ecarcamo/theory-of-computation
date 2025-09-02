@@ -1,33 +1,43 @@
+// Subconjuntos DFA:
+// A = q0_q1_q2_q4_q6_q8_
+// C = q1_q2_q3_q4_q6_q7_q8_
+// D = q1_q2_q3_q4_q6_q7_q8_q11_q12_
+// I = q1_q2_q3_q4_q6_q7_q8_q13_q14_q15_q16_q17_q18_q20_q21_
+// B = q1_q2_q3_q4_q5_q6_q8_q9_q10_
+// E = q1_q2_q3_q4_q6_q7_q8_q13_q14_q15_q16_q18_q20_
+// F = q1_q2_q3_q4_q5_q6_q8_q9_q10_q15_q16_q17_q18_q19_q20_
+// G = q1_q2_q3_q4_q6_q7_q8_q15_q16_q17_q18_q20_q21_
+// H = q1_q2_q3_q4_q6_q7_q8_q11_q12_q15_q16_q17_q18_q20_q21_
 digraph DFA {
   rankdir=LR;
   node [shape=circle];
   s [shape=point];
-  s -> q0_q1_q2_q4_q6_q8_;
-  q1_q2_q3_q4_q6_q7_q8_q15_q16_q17_q18_q20_q21_ [shape=doublecircle];
-  q1_q2_q3_q4_q6_q7_q8_q11_q12_q15_q16_q17_q18_q20_q21_ [shape=doublecircle];
-  q1_q2_q3_q4_q6_q7_q8_q13_q14_q15_q16_q17_q18_q20_q21_ [shape=doublecircle];
-  q1_q2_q3_q4_q6_q7_q8_q13_q14_q15_q16_q18_q20_ [shape=doublecircle];
-  q1_q2_q3_q4_q5_q6_q8_q9_q10_q15_q16_q17_q18_q19_q20_ [shape=doublecircle];
-  q0_q1_q2_q4_q6_q8_;
-  q1_q2_q3_q4_q5_q6_q8_q9_q10_;
-  q1_q2_q3_q4_q6_q7_q8_;
-  q1_q2_q3_q4_q6_q7_q8_q11_q12_;
-  q1_q2_q3_q4_q6_q7_q8_q11_q12_q15_q16_q17_q18_q20_q21_ -> q1_q2_q3_q4_q5_q6_q8_q9_q10_q15_q16_q17_q18_q19_q20_ [label="a"];
-  q1_q2_q3_q4_q6_q7_q8_q11_q12_q15_q16_q17_q18_q20_q21_ -> q1_q2_q3_q4_q6_q7_q8_q13_q14_q15_q16_q17_q18_q20_q21_ [label="b"];
-  q1_q2_q3_q4_q6_q7_q8_q13_q14_q15_q16_q17_q18_q20_q21_ -> q1_q2_q3_q4_q5_q6_q8_q9_q10_q15_q16_q17_q18_q19_q20_ [label="a"];
-  q1_q2_q3_q4_q6_q7_q8_q13_q14_q15_q16_q17_q18_q20_q21_ -> q1_q2_q3_q4_q6_q7_q8_q15_q16_q17_q18_q20_q21_ [label="b"];
-  q1_q2_q3_q4_q6_q7_q8_ -> q1_q2_q3_q4_q5_q6_q8_q9_q10_ [label="a"];
-  q1_q2_q3_q4_q6_q7_q8_ -> q1_q2_q3_q4_q6_q7_q8_ [label="b"];
-  q0_q1_q2_q4_q6_q8_ -> q1_q2_q3_q4_q5_q6_q8_q9_q10_ [label="a"];
-  q0_q1_q2_q4_q6_q8_ -> q1_q2_q3_q4_q6_q7_q8_ [label="b"];
-  q1_q2_q3_q4_q5_q6_q8_q9_q10_ -> q1_q2_q3_q4_q5_q6_q8_q9_q10_ [label="a"];
-  q1_q2_q3_q4_q5_q6_q8_q9_q10_ -> q1_q2_q3_q4_q6_q7_q8_q11_q12_ [label="b"];
-  q1_q2_q3_q4_q6_q7_q8_q11_q12_ -> q1_q2_q3_q4_q5_q6_q8_q9_q10_ [label="a"];
-  q1_q2_q3_q4_q6_q7_q8_q11_q12_ -> q1_q2_q3_q4_q6_q7_q8_q13_q14_q15_q16_q18_q20_ [label="b"];
-  q1_q2_q3_q4_q6_q7_q8_q13_q14_q15_q16_q18_q20_ -> q1_q2_q3_q4_q5_q6_q8_q9_q10_q15_q16_q17_q18_q19_q20_ [label="a"];
-  q1_q2_q3_q4_q6_q7_q8_q13_q14_q15_q16_q18_q20_ -> q1_q2_q3_q4_q6_q7_q8_q15_q16_q17_q18_q20_q21_ [label="b"];
-  q1_q2_q3_q4_q5_q6_q8_q9_q10_q15_q16_q17_q18_q19_q20_ -> q1_q2_q3_q4_q5_q6_q8_q9_q10_q15_q16_q17_q18_q19_q20_ [label="a"];
-  q1_q2_q3_q4_q5_q6_q8_q9_q10_q15_q16_q17_q18_q19_q20_ -> q1_q2_q3_q4_q6_q7_q8_q11_q12_q15_q16_q17_q18_q20_q21_ [label="b"];
-  q1_q2_q3_q4_q6_q7_q8_q15_q16_q17_q18_q20_q21_ -> q1_q2_q3_q4_q5_q6_q8_q9_q10_q15_q16_q17_q18_q19_q20_ [label="a"];
-  q1_q2_q3_q4_q6_q7_q8_q15_q16_q17_q18_q20_q21_ -> q1_q2_q3_q4_q6_q7_q8_q15_q16_q17_q18_q20_q21_ [label="b"];
+  s -> A;
+  E [shape=doublecircle];
+  F [shape=doublecircle];
+  G [shape=doublecircle];
+  H [shape=doublecircle];
+  I [shape=doublecircle];
+  A;
+  B;
+  C;
+  D;
+  C -> C [label="b"];
+  C -> B [label="a"];
+  D -> B [label="a"];
+  D -> E [label="b"];
+  H -> F [label="a"];
+  H -> I [label="b"];
+  I -> F [label="a"];
+  I -> G [label="b"];
+  B -> D [label="b"];
+  B -> B [label="a"];
+  E -> F [label="a"];
+  E -> G [label="b"];
+  F -> F [label="a"];
+  F -> H [label="b"];
+  G -> F [label="a"];
+  G -> G [label="b"];
+  A -> B [label="a"];
+  A -> C [label="b"];
 }

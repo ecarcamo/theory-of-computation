@@ -1,21 +1,27 @@
+// Subconjuntos DFA:
+// A = q0_q1_q2_q3_q4_q6_q7_q8_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_
+// B = q1_q3_q4_q5_q10_q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_
+// C = q1_q7_q8_q9_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_
+// D = q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_
+// E = q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_
 digraph DFA {
   rankdir=LR;
   node [shape=circle];
   s [shape=point];
-  s -> q0_q1_q2_q3_q4_q6_q7_q8_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_;
-  q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [shape=doublecircle];
-  q0_q1_q2_q3_q4_q6_q7_q8_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_ [shape=doublecircle];
-  q1_q3_q4_q5_q10_q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [shape=doublecircle];
-  q1_q7_q8_q9_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [shape=doublecircle];
-  q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [shape=doublecircle];
-  q0_q1_q2_q3_q4_q6_q7_q8_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_ -> q1_q3_q4_q5_q10_q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [label="a"];
-  q0_q1_q2_q3_q4_q6_q7_q8_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_ -> q1_q7_q8_q9_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [label="b"];
-  q1_q3_q4_q5_q10_q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ -> q1_q3_q4_q5_q10_q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [label="a"];
-  q1_q3_q4_q5_q10_q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ -> q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [label="b"];
-  q1_q7_q8_q9_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ -> q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [label="a"];
-  q1_q7_q8_q9_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ -> q1_q7_q8_q9_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [label="b"];
-  q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ -> q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [label="a"];
-  q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ -> q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [label="b"];
-  q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ -> q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [label="a"];
-  q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ -> q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [label="b"];
+  s -> A;
+  A [shape=doublecircle];
+  B [shape=doublecircle];
+  C [shape=doublecircle];
+  D [shape=doublecircle];
+  E [shape=doublecircle];
+  A -> C [label="b"];
+  A -> B [label="a"];
+  B -> B [label="a"];
+  B -> D [label="b"];
+  C -> E [label="a"];
+  C -> C [label="b"];
+  D -> E [label="a"];
+  D -> D [label="b"];
+  E -> E [label="a"];
+  E -> D [label="b"];
 }
