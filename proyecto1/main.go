@@ -15,11 +15,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"lab4/config"
-	"lab4/graphviz"
-	"lab4/nfa"
-	"lab4/regex"
-	"lab4/thompson"
+	"proyecto1/config"
+	"proyecto1/graphviz"
+	"proyecto1/nfa"
+	"proyecto1/regex"
+	"proyecto1/thompson"
 )
 
 func main() {
@@ -110,6 +110,27 @@ func main() {
 		accepted := nfa.Simulate(nfaObj, w)
 		ans := map[bool]string{true: "sí", false: "no"}[accepted]
 		fmt.Printf("  w ∈ L(r)? %s   (w = %q)\n\n", ans, w)
+
+		alphabet := []rune{}
+		for _, c := range formatted {
+			if config.IsAlphanumeric(c) && c != 'ε' && !config.ContainsRune(alphabet, c) {
+				alphabet = append(alphabet, c)
+			}
+		}
+		dfaObj := nfa.NFAtoDFA(nfaObj, alphabet)
+		dfaDotPath := filepath.Join(*dotDir, fmt.Sprintf("dfa_%03d.dot", lineNo))
+		dfaPngPath := filepath.Join(*pngDir, fmt.Sprintf("dfa_%03d.png", lineNo))
+		// Necesitas adaptar tu función WriteDOT para aceptar un DFA, o crear una nueva para DFA.
+		if err := graphviz.WriteDOTDFA(dfaObj, dfaDotPath); err != nil {
+			log.Printf("  DFA DOT error: %v\n\n", err)
+			continue
+		}
+		fmt.Printf("  DFA DOT saved: %s\n", dfaDotPath)
+		if err := graphviz.GeneratePNGFromDot(dfaDotPath, dfaPngPath); err != nil {
+			log.Printf("  DFA PNG error: %v\n\n", err)
+		} else {
+			fmt.Printf("  DFA PNG saved: %s\n", dfaPngPath)
+		}
 	}
 
 	if err := sc.Err(); err != nil {

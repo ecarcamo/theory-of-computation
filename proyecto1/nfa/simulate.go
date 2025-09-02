@@ -2,7 +2,7 @@
 package nfa
 
 import (
-	"lab4/thompson"
+	"proyecto1/thompson"
 	"unicode/utf8"
 )
 

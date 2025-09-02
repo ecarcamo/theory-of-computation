@@ -1,0 +1,21 @@
+digraph DFA {
+  rankdir=LR;
+  node [shape=circle];
+  s [shape=point];
+  s -> q0_q1_q2_q3_q4_q6_q7_q8_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_;
+  q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [shape=doublecircle];
+  q0_q1_q2_q3_q4_q6_q7_q8_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_ [shape=doublecircle];
+  q1_q3_q4_q5_q10_q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [shape=doublecircle];
+  q1_q7_q8_q9_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [shape=doublecircle];
+  q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [shape=doublecircle];
+  q0_q1_q2_q3_q4_q6_q7_q8_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_ -> q1_q3_q4_q5_q10_q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [label="a"];
+  q0_q1_q2_q3_q4_q6_q7_q8_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_ -> q1_q7_q8_q9_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [label="b"];
+  q1_q3_q4_q5_q10_q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ -> q1_q3_q4_q5_q10_q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [label="a"];
+  q1_q3_q4_q5_q10_q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ -> q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [label="b"];
+  q1_q7_q8_q9_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ -> q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [label="a"];
+  q1_q7_q8_q9_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ -> q1_q7_q8_q9_q10_q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [label="b"];
+  q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ -> q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [label="a"];
+  q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ -> q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [label="b"];
+  q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ -> q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ [label="a"];
+  q11_q12_q13_q14_q15_q16_q17_q18_q19_q20_ -> q11_q12_q13_q14_q15_q16_q18_q19_q20_q21_ [label="b"];
+}

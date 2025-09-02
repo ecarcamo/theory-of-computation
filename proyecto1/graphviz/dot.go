@@ -4,10 +4,11 @@ package graphviz
 
 import (
 	"fmt"
-	"lab4/thompson"
+	"proyecto1/thompson"
 	"os"
 	"os/exec"
 	"sort"
+	"proyecto1/nfa"
 )
 
 // WriteDOT writes the NFA to a DOT file at the specified path.
@@ -61,6 +62,42 @@ func WriteDOT(nfa *thompson.NFA, path string) error {
 
 	fmt.Fprintln(f, "}")
 	return nil
+}
+
+func WriteDOTDFA(dfa *nfa.DFA, path string) error {
+    f, err := os.Create(path)
+    if err != nil {
+        return err
+    }
+    defer f.Close()
+
+    fmt.Fprintln(f, "digraph DFA {")
+    fmt.Fprintln(f, "  rankdir=LR;")
+    fmt.Fprintln(f, "  node [shape=circle];")
+    fmt.Fprintf(f, "  s [shape=point];\n")
+    fmt.Fprintf(f, "  s -> %s;\n", dfa.Start)
+
+    // Estados de aceptación
+    for state := range dfa.Accepting {
+        fmt.Fprintf(f, "  %s [shape=doublecircle];\n", state)
+    }
+
+    // Otros estados
+    for _, state := range dfa.States {
+        if !dfa.Accepting[state] {
+            fmt.Fprintf(f, "  %s;\n", state)
+        }
+    }
+
+    // Transiciones
+    for from, trans := range dfa.Transitions {
+        for sym, to := range trans {
+            fmt.Fprintf(f, "  %s -> %s [label=\"%c\"];\n", from, to, sym)
+        }
+    }
+
+    fmt.Fprintln(f, "}")
+    return nil
 }
 
 // GeneratePNGFromDot generates a PNG image from a DOT file using the 'dot' command.

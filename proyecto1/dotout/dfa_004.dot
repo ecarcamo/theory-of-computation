@@ -1,0 +1,16 @@
+digraph DFA {
+  rankdir=LR;
+  node [shape=circle];
+  s [shape=point];
+  s -> q0_q1_q2_q4_q5_q6_q7_q8_q9_q10_q12_q13_q14_q15_q16_q17_q18_;
+  q17_q18_q19_ [shape=doublecircle];
+  q0_q1_q2_q4_q5_q6_q7_q8_q9_q10_q12_q13_q14_q15_q16_q17_q18_ [shape=doublecircle];
+  q1_q3_q6_q7_q8_q9_q10_q12_q13_q14_q15_q16_q17_q18_q19_ [shape=doublecircle];
+  q7_q9_q11_q16_q17_q18_ [shape=doublecircle];
+  q0_q1_q2_q4_q5_q6_q7_q8_q9_q10_q12_q13_q14_q15_q16_q17_q18_ -> q1_q3_q6_q7_q8_q9_q10_q12_q13_q14_q15_q16_q17_q18_q19_ [label="0"];
+  q0_q1_q2_q4_q5_q6_q7_q8_q9_q10_q12_q13_q14_q15_q16_q17_q18_ -> q7_q9_q11_q16_q17_q18_ [label="1"];
+  q1_q3_q6_q7_q8_q9_q10_q12_q13_q14_q15_q16_q17_q18_q19_ -> q17_q18_q19_ [label="0"];
+  q1_q3_q6_q7_q8_q9_q10_q12_q13_q14_q15_q16_q17_q18_q19_ -> q7_q9_q11_q16_q17_q18_ [label="1"];
+  q7_q9_q11_q16_q17_q18_ -> q17_q18_q19_ [label="0"];
+  q17_q18_q19_ -> q17_q18_q19_ [label="0"];
+}

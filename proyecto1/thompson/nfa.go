@@ -5,15 +5,16 @@ package thompson
 
 import (
 	"fmt"
-	"lab4/regex"
+	"proyecto1/regex"
 )
 
 const Epsilon rune = 'ε'
 
 // State represents a state in the NFA.
 type State struct {
-	ID    int
-	Trans map[rune][]*State
+	ID       int
+	Epsilon  []*State
+	Trans    map[rune][]*State
 }
 
 // NFA represents a non-deterministic finite automaton.
@@ -130,4 +131,14 @@ func (b *builder) buildRec(n *regex.Node) frag {
 	default:
 		panic("unknown node kind")
 	}
+}
+
+// AcceptingInSet retorna true si algún estado del conjunto es el estado de aceptación del NFA.
+func (nfa *NFA) AcceptingInSet(set map[*State]struct{}) bool {
+    for s := range set {
+        if s == nfa.Accept {
+            return true
+        }
+    }
+    return false
 }

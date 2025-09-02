@@ -5,7 +5,7 @@ package regex
 
 import (
 	"fmt"
-	"lab4/config"
+	"proyecto1/config"
 )
 
 type Kind int
