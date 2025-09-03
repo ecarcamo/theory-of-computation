@@ -1,25 +1,33 @@
+// Package nfa provides functionality for working with finite automata,
+// including DFA minimization using the state partition algorithm.
 package nfa
 
 import (
 	"fmt"
 )
 
-// MinimizeDFA minimiza un DFA usando el algoritmo de partición de estados
+// MinimizeDFA minimizes a DFA using the state partition algorithm.
+// The algorithm works by:
+// 1. Removing unreachable states
+// 2. Creating initial partitions (accepting vs. non-accepting states)
+// 3. Refining partitions until no more refinements are possible
+// 4. Building a new DFA with one state per partition
 func MinimizeDFA(dfa *DFA) *DFA {
-	// 1. Eliminar estados inalcanzables
+	// Step 1: Eliminate unreachable states
 	reachable := getReachableStates(dfa)
 
-	// 2. Inicializar particiones (aceptación/no aceptación)
+	// Step 2: Initialize partitions (accepting/non-accepting)
 	partitions := initializePartitions(dfa, reachable)
 
-	// 3. Refinar particiones
+	// Step 3: Refine partitions until no changes occur
 	partitions = refinePartitions(dfa, partitions)
 
-	// 4. Construir el DFA mínimo
+	// Step 4: Build the minimized DFA from the final partitions
 	return buildMinimizedDFA(dfa, partitions)
 }
 
-// getReachableStates devuelve un mapa de estados alcanzables desde el estado inicial
+// getReachableStates returns a map of states reachable from the initial state.
+// This is done using breadth-first search from the start state.
 func getReachableStates(dfa *DFA) map[string]bool {
 	reachable := make(map[string]bool)
 	queue := []string{dfa.Start}
@@ -29,6 +37,7 @@ func getReachableStates(dfa *DFA) map[string]bool {
 		state := queue[0]
 		queue = queue[1:]
 
+		// Check all possible transitions from current state
 		for _, symbol := range dfa.Alphabet {
 			if nextState, exists := dfa.Transitions[state][symbol]; exists {
 				if !reachable[nextState] {
@@ -42,14 +51,16 @@ func getReachableStates(dfa *DFA) map[string]bool {
 	return reachable
 }
 
-// initializePartitions crea la partición inicial (aceptación/no aceptación)
+// initializePartitions creates the initial partition (accepting/non-accepting states).
+// This is the starting point for the state partition algorithm.
 func initializePartitions(dfa *DFA, reachable map[string]bool) []map[string]bool {
 	accepting := make(map[string]bool)
 	nonAccepting := make(map[string]bool)
 
+	// Separate states into accepting and non-accepting groups
 	for _, state := range dfa.States {
 		if !reachable[state] {
-			continue
+			continue // Skip unreachable states
 		}
 
 		if dfa.Accepting[state] {
@@ -59,6 +70,7 @@ func initializePartitions(dfa *DFA, reachable map[string]bool) []map[string]bool
 		}
 	}
 
+	// Create the initial partitions
 	result := []map[string]bool{}
 	if len(accepting) > 0 {
 		result = append(result, accepting)
@@ -70,17 +82,22 @@ func initializePartitions(dfa *DFA, reachable map[string]bool) []map[string]bool
 	return result
 }
 
-// refinePartitions refina las particiones hasta que no haya cambios
+// refinePartitions refines the partitions until no more changes are possible.
+// Two states belong in the same partition if they have the same behavior
+// (transitions lead to states in the same partitions).
 func refinePartitions(dfa *DFA, partitions []map[string]bool) []map[string]bool {
 	changed := true
 
+	// Continue refining until no changes occur
 	for changed {
 		changed = false
 		newPartitions := []map[string]bool{}
 
+		// Attempt to split each partition
 		for _, partition := range partitions {
 			subPartitions := splitPartition(dfa, partition, partitions)
 
+			// If the partition was split, mark as changed
 			if len(subPartitions) > 1 {
 				changed = true
 				newPartitions = append(newPartitions, subPartitions...)
@@ -89,6 +106,7 @@ func refinePartitions(dfa *DFA, partitions []map[string]bool) []map[string]bool 
 			}
 		}
 
+		// Update partitions if changes occurred
 		if changed {
 			partitions = newPartitions
 		}
@@ -97,32 +115,36 @@ func refinePartitions(dfa *DFA, partitions []map[string]bool) []map[string]bool 
 	return partitions
 }
 
-// splitPartition divide una partición si es necesario
+// splitPartition divides a partition if necessary.
+// States in the same partition are split if their transitions
+// lead to states in different partitions.
 func splitPartition(dfa *DFA, partition map[string]bool, allPartitions []map[string]bool) []map[string]bool {
 	if len(partition) <= 1 {
-		return []map[string]bool{partition}
+		return []map[string]bool{partition} // Cannot split a singleton
 	}
 
-	// Agrupa por comportamiento similar
+	// Group states by their behavior (transition signature)
 	groups := make(map[string]map[string]bool)
 	signatureFor := make(map[string]string)
 
 	for state := range partition {
+		// Calculate a signature based on where transitions lead
 		signature := computeSignature(dfa, state, allPartitions)
 		signatureFor[state] = signature
 
+		// Group states by signature
 		if _, exists := groups[signature]; !exists {
 			groups[signature] = make(map[string]bool)
 		}
 		groups[signature][state] = true
 	}
 
-	// Si todos tienen la misma firma, no dividimos
+	// If all states have the same signature, no need to split
 	if len(groups) == 1 {
 		return []map[string]bool{partition}
 	}
 
-	// Crear las nuevas particiones
+	// Create new partitions based on signature groups
 	result := []map[string]bool{}
 	for _, group := range groups {
 		result = append(result, group)
@@ -131,10 +153,12 @@ func splitPartition(dfa *DFA, partition map[string]bool, allPartitions []map[str
 	return result
 }
 
-// computeSignature calcula una firma única para un estado basado en sus transiciones
+// computeSignature calculates a unique signature for a state based on its transitions.
+// The signature indicates which partition each transition leads to.
 func computeSignature(dfa *DFA, state string, partitions []map[string]bool) string {
 	signatures := []string{}
 
+	// For each symbol, record which partition the next state belongs to
 	for _, symbol := range dfa.Alphabet {
 		nextState, exists := dfa.Transitions[state][symbol]
 		if !exists {

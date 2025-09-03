@@ -1,3 +1,44 @@
+# Proyecto 1: Theory of Computation
+
+Este proyecto implementa un sistema para procesar expresiones regulares, construir sus autómatas (NFA, DFA y DFA minimizado), simular cadenas y generar visualizaciones gráficas.
+
+## Funcionalidades
+
+- Construcción de NFA usando el algoritmo de Thompson.
+- Conversión de NFA a DFA mediante el algoritmo de subconjuntos.
+- Minimización de DFA usando el algoritmo de partición de estados.
+- Simulación de cadenas en NFA.
+- Generación de archivos DOT y PNG para visualizar los autómatas.
+- Soporte para expresiones regulares extendidas: Kleene star, unión, concatenación, epsilon, etc.
+
+## Uso
+
+1. Coloca tus expresiones regulares y cadenas en `input.txt` (formato: `regex;cadena`).
+2. Ejecuta el programa principal:
+   ```sh
+   go run main.go
+   ```
+3. Los archivos DOT y PNG se generarán en las carpetas `dotout` y `pngout`.
+
+## Estructura de carpetas
+
+- `nfa/`: Lógica de conversión y minimización de autómatas.
+- `thompson/`: Construcción de NFA.
+- `graphviz/`: Generación de archivos DOT y PNG.
+- `config/`: Utilidades y configuración.
+- `regex/`: AST y procesamiento de expresiones regulares.
+
+## Requisitos
+
+- Go 1.24.1 o superior.
+- Graphviz instalado (`dot` en el PATH).
+
+## Créditos
+
+Proyecto realizado para la materia Theory of Computation.
+
+---
+
 Laboratorio 4
 📁 Estructura del repositorio
 

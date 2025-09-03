@@ -1,3 +1,5 @@
+// Package nfa proporciona funcionalidades para trabajar con autómatas finitos,
+// incluyendo conversión de NFA a DFA y minimización de DFA.
 package nfa
 
 import (
@@ -8,18 +10,18 @@ import (
 
 // DFA representa un autómata finito determinista.
 type DFA struct {
-	States      []string
-	Alphabet    []rune
-	Transitions map[string]map[rune]string // estado, símbolo -> estado destino
-	Start       string
-	Accepting   map[string]bool
+	States      []string                   // Lista de estados del DFA
+	Alphabet    []rune                     // Alfabeto de símbolos
+	Transitions map[string]map[rune]string // Función de transición: estado x símbolo → estado
+	Start       string                     // Estado inicial
+	Accepting   map[string]bool            // Conjunto de estados de aceptación
 }
 
-// NFAtoDFA convierte un NFA en un DFA usando el algoritmo de subconjuntos.
+// NFAtoDFA convierte un NFA en un DFA utilizando el algoritmo de subconjuntos.
 func NFAtoDFA(nfa *thompson.NFA, alphabet []rune) *DFA {
 	type stateSet map[*thompson.State]struct{}
 
-	// Nombre único para cada conjunto de estados
+	// Genera un nombre único para cada conjunto de estados
 	setName := func(set stateSet) string {
 		ids := []int{}
 		for s := range set {
@@ -33,7 +35,7 @@ func NFAtoDFA(nfa *thompson.NFA, alphabet []rune) *DFA {
 		return str
 	}
 
-	// Epsilon closure
+	// Calcula el cierre-epsilon de un conjunto de estados
 	epsilonClosure := func(states stateSet) stateSet {
 		stack := []*thompson.State{}
 		closure := make(stateSet)
@@ -54,7 +56,7 @@ func NFAtoDFA(nfa *thompson.NFA, alphabet []rune) *DFA {
 		return closure
 	}
 
-	// Move
+	// Calcula los estados alcanzables con un símbolo desde un conjunto de estados
 	move := func(states stateSet, sym rune) stateSet {
 		out := make(stateSet)
 		for s := range states {
@@ -65,19 +67,21 @@ func NFAtoDFA(nfa *thompson.NFA, alphabet []rune) *DFA {
 		return out
 	}
 
+	// Estructuras para construir el DFA
 	dfaStates := []string{}
 	dfaTransitions := map[string]map[rune]string{}
 	dfaAccepting := map[string]bool{}
 	seen := map[string]stateSet{}
 	queue := []stateSet{}
 
-	// Estado inicial del DFA
+	// Inicializar con el cierre-epsilon del estado inicial del NFA
 	startSet := epsilonClosure(stateSet{nfa.Start: {}})
 	startName := setName(startSet)
 	dfaStates = append(dfaStates, startName)
 	seen[startName] = startSet
 	queue = append(queue, startSet)
 
+	// Verificar si el estado inicial es de aceptación
 	if nfa.AcceptingInSet(startSet) {
 		dfaAccepting[startName] = true
 	}

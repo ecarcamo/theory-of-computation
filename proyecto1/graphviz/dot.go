@@ -1,5 +1,5 @@
-// Package graphviz provides functions to generate Graphviz DOT files and PNG images
-// from a Thompson NFA.
+// Package graphviz proporciona funciones para generar archivos DOT de Graphviz
+// y convertirlos a imágenes PNG a partir de autómatas finitos.
 package graphviz
 
 import (
@@ -11,7 +11,7 @@ import (
 	"sort"
 )
 
-// WriteDOT writes the NFA to a DOT file at the specified path.
+// WriteDOT escribe la representación DOT de un NFA en la ruta especificada.
 func WriteDOT(nfa *thompson.NFA, path string) error {
 	f, err := os.Create(path)
 	if err != nil {
@@ -19,19 +19,19 @@ func WriteDOT(nfa *thompson.NFA, path string) error {
 	}
 	defer f.Close()
 
-	// header and graph settings
+	// Encabezado y configuración del grafo
 	fmt.Fprintln(f, "digraph NFA {")
 	fmt.Fprintln(f, "  rankdir=LR;")
 	fmt.Fprintln(f, "  node [shape=circle];")
 
-	// invisible entry arrow to start state
+	// Flecha invisible hacia el estado inicial
 	fmt.Fprintf(f, "  s [shape=point];\n")
 	fmt.Fprintf(f, "  s -> q%d;\n", nfa.Start.ID)
 
-	// accept as doublecircle node
+	// Marcar el estado de aceptación con doble círculo
 	fmt.Fprintf(f, "  q%d [shape=doublecircle];\n", nfa.Accept.ID)
 
-	// nodes (sorted by ID for consistency)
+	// Nodos (ordenados por ID para consistencia)
 	ids := make([]int, 0, len(nfa.States))
 	idToState := make(map[int]*thompson.State)
 	for _, s := range nfa.States {
@@ -41,12 +41,12 @@ func WriteDOT(nfa *thompson.NFA, path string) error {
 	sort.Ints(ids)
 	for _, id := range ids {
 		if id == nfa.Accept.ID {
-			continue // already declared with doublecircle
+			continue // Ya declarado como doble círculo
 		}
 		fmt.Fprintf(f, "  q%d;\n", id)
 	}
 
-	// edges (sorted by from ID, label, to ID for consistency)
+	// Aristas (transiciones, ordenadas para consistencia)
 	for _, id := range ids {
 		s := idToState[id]
 		for label, outs := range s.Trans {
@@ -64,6 +64,7 @@ func WriteDOT(nfa *thompson.NFA, path string) error {
 	return nil
 }
 
+// WriteDOTDFA escribe la representación DOT de un DFA en la ruta especificada.
 func WriteDOTDFA(dfa *nfa.DFA, path string) error {
 	f, err := os.Create(path)
 	if err != nil {
@@ -71,23 +72,27 @@ func WriteDOTDFA(dfa *nfa.DFA, path string) error {
 	}
 	defer f.Close()
 
-	// Asignar letras a subconjuntos
+	// Asignar letras a subconjuntos para mayor legibilidad
 	letters := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	subsetNames := map[string]string{}
 	for i, state := range dfa.States {
-		subsetNames[state] = string(letters[i])
+		if i < len(letters) {
+			subsetNames[state] = string(letters[i])
+		} else {
+			// Si hay más estados que letras, usar q0, q1, etc.
+			subsetNames[state] = fmt.Sprintf("q%d", i-len(letters))
+		}
 	}
 
-	// Comentarios con definiciones
+	// Comentarios con definiciones de los subconjuntos
 	fmt.Fprintln(f, "// Subconjuntos DFA:")
 	for state, letra := range subsetNames {
 		fmt.Fprintf(f, "// %s = %s\n", letra, state)
 	}
 
-	// Verifica si el estado inicial existe en el mapa antes de escribir la conexión
+	// Verificar si el estado inicial existe en el mapa
 	startName, ok := subsetNames[dfa.Start]
 	if !ok {
-		// Si no existe, asigna un nombre predeterminado
 		startName = "q0"
 		subsetNames[dfa.Start] = startName
 	}
@@ -98,12 +103,12 @@ func WriteDOTDFA(dfa *nfa.DFA, path string) error {
 	fmt.Fprintf(f, "  s [shape=point];\n")
 	fmt.Fprintf(f, "  s -> %s;\n", startName)
 
-	// Estados de aceptación
+	// Estados de aceptación con doble círculo
 	for state := range dfa.Accepting {
 		fmt.Fprintf(f, "  %s [shape=doublecircle];\n", subsetNames[state])
 	}
 
-	// Otros estados
+	// Estados normales
 	for _, state := range dfa.States {
 		if !dfa.Accepting[state] {
 			fmt.Fprintf(f, "  %s;\n", subsetNames[state])
@@ -113,7 +118,9 @@ func WriteDOTDFA(dfa *nfa.DFA, path string) error {
 	// Transiciones
 	for from, trans := range dfa.Transitions {
 		for sym, to := range trans {
-			fmt.Fprintf(f, "  %s -> %s [label=\"%c\"];\n", subsetNames[from], subsetNames[to], sym)
+			fromName := subsetNames[from]
+			toName := subsetNames[to]
+			fmt.Fprintf(f, "  %s -> %s [label=\"%c\"];\n", fromName, toName, sym)
 		}
 	}
 
@@ -121,7 +128,7 @@ func WriteDOTDFA(dfa *nfa.DFA, path string) error {
 	return nil
 }
 
-// GeneratePNGFromDot generates a PNG image from a DOT file using the 'dot' command.
+// GeneratePNGFromDot genera una imagen PNG a partir de un archivo DOT usando el comando 'dot'.
 func GeneratePNGFromDot(dotPath, pngPath string) error {
 	cmd := exec.Command("dot", "-Tpng", dotPath, "-o", pngPath)
 	cmd.Stdout = os.Stdout
