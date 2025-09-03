@@ -120,7 +120,6 @@ func main() {
 		dfaObj := nfa.NFAtoDFA(nfaObj, alphabet)
 		dfaDotPath := filepath.Join(*dotDir, fmt.Sprintf("dfa_%03d.dot", lineNo))
 		dfaPngPath := filepath.Join(*pngDir, fmt.Sprintf("dfa_%03d.png", lineNo))
-		// Necesitas adaptar tu función WriteDOT para aceptar un DFA, o crear una nueva para DFA.
 		if err := graphviz.WriteDOTDFA(dfaObj, dfaDotPath); err != nil {
 			log.Printf("  DFA DOT error: %v\n\n", err)
 			continue
@@ -130,6 +129,22 @@ func main() {
 			log.Printf("  DFA PNG error: %v\n\n", err)
 		} else {
 			fmt.Printf("  DFA PNG saved: %s\n", dfaPngPath)
+		}
+
+		// Minimize DFA
+		minDFA := nfa.MinimizeDFA(dfaObj)
+		minDfaDotPath := filepath.Join(*dotDir, fmt.Sprintf("min_dfa_%03d.dot", lineNo))
+		minDfaPngPath := filepath.Join(*pngDir, fmt.Sprintf("min_dfa_%03d.png", lineNo))
+
+		if err := graphviz.WriteDOTDFA(minDFA, minDfaDotPath); err != nil {
+			log.Printf("  Minimized DFA DOT error: %v\n\n", err)
+			continue
+		}
+		fmt.Printf("  Minimized DFA DOT saved: %s\n", minDfaDotPath)
+		if err := graphviz.GeneratePNGFromDot(minDfaDotPath, minDfaPngPath); err != nil {
+			log.Printf("  Minimized DFA PNG error: %v\n\n", err)
+		} else {
+			fmt.Printf("  Minimized DFA PNG saved: %s\n", minDfaPngPath)
 		}
 	}
 
