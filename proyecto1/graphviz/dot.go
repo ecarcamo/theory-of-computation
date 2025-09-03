@@ -84,11 +84,19 @@ func WriteDOTDFA(dfa *nfa.DFA, path string) error {
 		fmt.Fprintf(f, "// %s = %s\n", letra, state)
 	}
 
+	// Verifica si el estado inicial existe en el mapa antes de escribir la conexión
+	startName, ok := subsetNames[dfa.Start]
+	if !ok {
+		// Si no existe, asigna un nombre predeterminado
+		startName = "q0"
+		subsetNames[dfa.Start] = startName
+	}
+
 	fmt.Fprintln(f, "digraph DFA {")
 	fmt.Fprintln(f, "  rankdir=LR;")
 	fmt.Fprintln(f, "  node [shape=circle];")
 	fmt.Fprintf(f, "  s [shape=point];\n")
-	fmt.Fprintf(f, "  s -> %s;\n", subsetNames[dfa.Start])
+	fmt.Fprintf(f, "  s -> %s;\n", startName)
 
 	// Estados de aceptación
 	for state := range dfa.Accepting {
