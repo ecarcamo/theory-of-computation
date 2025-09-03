@@ -1,3 +1,4 @@
+(A|B|a|b)((A|B|a|b)|(0|1))*;AAA
 (a*|b*)+;aaaa
 ((ε|a)|b*)*;abbb
 (a|b)*abb(a|b)*;xxabbx
