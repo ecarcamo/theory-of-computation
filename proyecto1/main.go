@@ -1,10 +1,10 @@
-// labs/lab4/main.go
-// This file is part of the lab4 project for the course on Theory of Computation.
-// It implements a command-line tool to read regexes from an input file,
-// build their NFAs using Thompson's construction, and generate DOT and PNG files
-// for visualization. It also simulates the NFA with a given string to check acceptance.
-// It supports regex extensions like Kleene star, union, concatenation, and more.
-// Package main implementa la funcionalidad principal para procesar expresiones regulares,
+// /proyecto1/main.go
+// Este archivo es parte del proyecto proyecto1 para la materia de Teoría de la Computación.
+// Implementa una herramienta de línea de comandos que lee expresiones regulares desde un archivo,
+// construye sus NFAs usando la construcción de Thompson, y genera archivos DOT y PNG para visualización.
+// También simula el NFA con una cadena dada para verificar aceptación.
+// Soporta extensiones de regex como estrella de Kleene, unión, concatenación, entre otros.
+// El paquete main implementa la funcionalidad principal para procesar expresiones regulares,
 // construir autómatas (NFA, DFA y DFA minimizado) y generar sus representaciones gráficas.
 package main
 
@@ -25,13 +25,13 @@ import (
 )
 
 func main() {
-	// Configuración de flags para rutas de entrada/salida
+	// Definición de flags para rutas de entrada y salida
 	inPath := flag.String("in", "input.txt", "ruta al archivo de entrada")
 	dotDir := flag.String("dotout", "dotout", "directorio de salida para archivos DOT")
 	pngDir := flag.String("pngout", "pngout", "directorio de salida para archivos PNG")
 	flag.Parse()
 
-	// Apertura del archivo de entrada
+	// Abrir el archivo de entrada
 	f, err := os.Open(*inPath)
 	if err != nil {
 		log.Fatalf("no se pudo abrir el archivo de entrada: %v", err)
@@ -41,15 +41,16 @@ func main() {
 	sc := bufio.NewScanner(f)
 	lineNo := 0
 
-	// Procesamiento línea por línea del archivo de entrada
+	// Procesar el archivo línea por línea
 	for sc.Scan() {
 		lineNo++
 		raw := strings.TrimSpace(sc.Text())
+		// Ignorar líneas vacías o comentarios
 		if raw == "" || strings.HasPrefix(raw, "#") {
 			continue
 		}
 
-		// Verificación del formato "regex;w"
+		// Separar la línea en expresión regular y cadena de prueba usando ';'
 		parts := strings.SplitN(raw, ";", 2)
 		if len(parts) != 2 {
 			log.Printf("Línea %d: formato inválido. Se esperaba 'regex;w'. Se encontró: %q\n", lineNo, raw)
@@ -66,32 +67,33 @@ func main() {
 			continue
 		}
 
-		// Procesamiento de la expresión regular
-		expanded := config.ExpandRegexExtensions(r)
-		formatted := config.FormatRegex(expanded)
-		postfix := config.InfixToPostfix(formatted)
+		// Expande y formatea la expresión regular, luego la convierte a notación postfija
+		expanded := config.ExpandRegexExtensions(r) // Expande extensiones como '+', '?', etc.
+		formatted := config.FormatRegex(expanded)   // Añade concatenaciones explícitas
+		postfix := config.InfixToPostfix(formatted) // Convierte a notación postfija
 
+		// Muestra información de la expresión regular procesada
 		fmt.Printf("Línea %d\n", lineNo)
 		fmt.Printf("  regex original: %s\n", r)
 		fmt.Printf("  expandida: %s\n", expanded)
 		fmt.Printf("  formateada: %s\n", formatted)
 		fmt.Printf("  postfija: %s\n", postfix)
 
-		// Construcción del AST desde la notación postfija
+		// Construye el AST (árbol de sintaxis) desde la expresión postfija
 		ast, err := regex.BuildAST(postfix)
 		if err != nil {
 			log.Printf("  Error de AST: %v\n\n", err)
 			continue
 		}
 
-		// Construcción del NFA mediante Thompson
+		// Construye el NFA usando el algoritmo de Thompson
 		nfaObj, err := thompson.Build(ast)
 		if err != nil {
 			log.Printf("  Error de Thompson: %v\n\n", err)
 			continue
 		}
 
-		// Generación de archivos DOT y PNG para NFA
+		// Genera archivos DOT y PNG para visualizar el NFA
 		dotPath := filepath.Join(*dotDir, fmt.Sprintf("nfa_%03d.dot", lineNo))
 		pngPath := filepath.Join(*pngDir, fmt.Sprintf("nfa_%03d.png", lineNo))
 
@@ -107,12 +109,12 @@ func main() {
 			fmt.Printf("  PNG guardado: %s\n", pngPath)
 		}
 
-		// Simulación del NFA con la cadena w
+		// Simula el NFA con la cadena w para verificar si es aceptada
 		accepted := nfa.Simulate(nfaObj, w)
 		ans := map[bool]string{true: "sí", false: "no"}[accepted]
 		fmt.Printf("  w ∈ L(r)? %s   (w = %q)\n\n", ans, w)
 
-		// Obtención del alfabeto para la conversión NFA→DFA
+		// Obtiene el alfabeto de la expresión regular para la conversión NFA→DFA
 		alphabet := []rune{}
 		for _, c := range formatted {
 			if config.IsAlphanumeric(c) && c != 'ε' && !config.ContainsRune(alphabet, c) {
@@ -120,7 +122,7 @@ func main() {
 			}
 		}
 
-		// Conversión de NFA a DFA mediante algoritmo de subconjuntos
+		// Convierte el NFA a DFA usando el algoritmo de subconjuntos
 		dfaObj := nfa.NFAtoDFA(nfaObj, alphabet)
 		dfaDotPath := filepath.Join(*dotDir, fmt.Sprintf("dfa_%03d.dot", lineNo))
 		dfaPngPath := filepath.Join(*pngDir, fmt.Sprintf("dfa_%03d.png", lineNo))
@@ -137,7 +139,7 @@ func main() {
 			fmt.Printf("  PNG DFA guardado: %s\n", dfaPngPath)
 		}
 
-		// Minimización del DFA
+		// Minimiza el DFA generado
 		minDFA := nfa.MinimizeDFA(dfaObj)
 		minDfaDotPath := filepath.Join(*dotDir, fmt.Sprintf("min_dfa_%03d.dot", lineNo))
 		minDfaPngPath := filepath.Join(*pngDir, fmt.Sprintf("min_dfa_%03d.png", lineNo))
@@ -155,6 +157,7 @@ func main() {
 		}
 	}
 
+	// Verifica si hubo errores al leer el archivo
 	if err := sc.Err(); err != nil {
 		log.Fatal(err)
 	}
