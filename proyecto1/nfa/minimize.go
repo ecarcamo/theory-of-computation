@@ -1,33 +1,33 @@
-// Package nfa provides functionality for working with finite automata,
-// including DFA minimization using the state partition algorithm.
+// Package nfa provee funcionalidad para trabajar con autómatas finitos,
+// incluyendo la minimización de DFA usando el algoritmo de partición de estados.
 package nfa
 
 import (
 	"fmt"
 )
 
-// MinimizeDFA minimizes a DFA using the state partition algorithm.
-// The algorithm works by:
-// 1. Removing unreachable states
-// 2. Creating initial partitions (accepting vs. non-accepting states)
-// 3. Refining partitions until no more refinements are possible
-// 4. Building a new DFA with one state per partition
+// MinimizeDFA minimiza un DFA usando el algoritmo de partición de estados.
+// El proceso consiste en:
+// 1. Eliminar estados inalcanzables.
+// 2. Crear particiones iniciales (estados de aceptación vs. no aceptación).
+// 3. Refinar las particiones hasta que no se puedan dividir más.
+// 4. Construir un nuevo DFA donde cada partición es un estado.
 func MinimizeDFA(dfa *DFA) *DFA {
-	// Step 1: Eliminate unreachable states
+	// Paso 1: Eliminar estados inalcanzables
 	reachable := getReachableStates(dfa)
 
-	// Step 2: Initialize partitions (accepting/non-accepting)
+	// Paso 2: Inicializar particiones (aceptación/no aceptación)
 	partitions := initializePartitions(dfa, reachable)
 
-	// Step 3: Refine partitions until no changes occur
+	// Paso 3: Refinar particiones hasta que no haya cambios
 	partitions = refinePartitions(dfa, partitions)
 
-	// Step 4: Build the minimized DFA from the final partitions
+	// Paso 4: Construir el DFA minimizado a partir de las particiones finales
 	return buildMinimizedDFA(dfa, partitions)
 }
 
-// getReachableStates returns a map of states reachable from the initial state.
-// This is done using breadth-first search from the start state.
+// getReachableStates obtiene un mapa de los estados alcanzables desde el estado inicial.
+// Utiliza búsqueda en anchura (BFS) desde el estado inicial.
 func getReachableStates(dfa *DFA) map[string]bool {
 	reachable := make(map[string]bool)
 	queue := []string{dfa.Start}
@@ -37,7 +37,7 @@ func getReachableStates(dfa *DFA) map[string]bool {
 		state := queue[0]
 		queue = queue[1:]
 
-		// Check all possible transitions from current state
+		// Revisa todas las transiciones posibles desde el estado actual
 		for _, symbol := range dfa.Alphabet {
 			if nextState, exists := dfa.Transitions[state][symbol]; exists {
 				if !reachable[nextState] {
@@ -51,16 +51,16 @@ func getReachableStates(dfa *DFA) map[string]bool {
 	return reachable
 }
 
-// initializePartitions creates the initial partition (accepting/non-accepting states).
-// This is the starting point for the state partition algorithm.
+// initializePartitions crea las particiones iniciales: estados de aceptación y no aceptación.
+// Solo incluye los estados alcanzables.
 func initializePartitions(dfa *DFA, reachable map[string]bool) []map[string]bool {
 	accepting := make(map[string]bool)
 	nonAccepting := make(map[string]bool)
 
-	// Separate states into accepting and non-accepting groups
+	// Separa los estados en dos grupos: aceptación y no aceptación
 	for _, state := range dfa.States {
 		if !reachable[state] {
-			continue // Skip unreachable states
+			continue // Ignora estados inalcanzables
 		}
 
 		if dfa.Accepting[state] {
@@ -70,7 +70,7 @@ func initializePartitions(dfa *DFA, reachable map[string]bool) []map[string]bool
 		}
 	}
 
-	// Create the initial partitions
+	// Devuelve las particiones iniciales
 	result := []map[string]bool{}
 	if len(accepting) > 0 {
 		result = append(result, accepting)
@@ -82,22 +82,21 @@ func initializePartitions(dfa *DFA, reachable map[string]bool) []map[string]bool
 	return result
 }
 
-// refinePartitions refines the partitions until no more changes are possible.
-// Two states belong in the same partition if they have the same behavior
-// (transitions lead to states in the same partitions).
+// refinePartitions refina las particiones hasta que no se puedan dividir más.
+// Dos estados están en la misma partición si sus transiciones llevan a los mismos grupos.
 func refinePartitions(dfa *DFA, partitions []map[string]bool) []map[string]bool {
 	changed := true
 
-	// Continue refining until no changes occur
+	// Continúa refinando mientras haya cambios
 	for changed {
 		changed = false
 		newPartitions := []map[string]bool{}
 
-		// Attempt to split each partition
+		// Intenta dividir cada partición
 		for _, partition := range partitions {
 			subPartitions := splitPartition(dfa, partition, partitions)
 
-			// If the partition was split, mark as changed
+			// Si la partición se dividió, marca como cambiado
 			if len(subPartitions) > 1 {
 				changed = true
 				newPartitions = append(newPartitions, subPartitions...)
@@ -106,7 +105,7 @@ func refinePartitions(dfa *DFA, partitions []map[string]bool) []map[string]bool 
 			}
 		}
 
-		// Update partitions if changes occurred
+		// Actualiza las particiones si hubo cambios
 		if changed {
 			partitions = newPartitions
 		}
@@ -115,36 +114,35 @@ func refinePartitions(dfa *DFA, partitions []map[string]bool) []map[string]bool 
 	return partitions
 }
 
-// splitPartition divides a partition if necessary.
-// States in the same partition are split if their transitions
-// lead to states in different partitions.
+// splitPartition divide una partición si es necesario.
+// Los estados se agrupan según el comportamiento de sus transiciones.
 func splitPartition(dfa *DFA, partition map[string]bool, allPartitions []map[string]bool) []map[string]bool {
 	if len(partition) <= 1 {
-		return []map[string]bool{partition} // Cannot split a singleton
+		return []map[string]bool{partition} // No se puede dividir una partición de un solo estado
 	}
 
-	// Group states by their behavior (transition signature)
+	// Agrupa los estados por su "firma" de transiciones
 	groups := make(map[string]map[string]bool)
 	signatureFor := make(map[string]string)
 
 	for state := range partition {
-		// Calculate a signature based on where transitions lead
+		// Calcula la firma del estado según las transiciones
 		signature := computeSignature(dfa, state, allPartitions)
 		signatureFor[state] = signature
 
-		// Group states by signature
+		// Agrupa los estados por firma
 		if _, exists := groups[signature]; !exists {
 			groups[signature] = make(map[string]bool)
 		}
 		groups[signature][state] = true
 	}
 
-	// If all states have the same signature, no need to split
+	// Si todos los estados tienen la misma firma, no se divide la partición
 	if len(groups) == 1 {
 		return []map[string]bool{partition}
 	}
 
-	// Create new partitions based on signature groups
+	// Crea nuevas particiones según los grupos de firma
 	result := []map[string]bool{}
 	for _, group := range groups {
 		result = append(result, group)
@@ -153,20 +151,20 @@ func splitPartition(dfa *DFA, partition map[string]bool, allPartitions []map[str
 	return result
 }
 
-// computeSignature calculates a unique signature for a state based on its transitions.
-// The signature indicates which partition each transition leads to.
+// computeSignature calcula una firma única para un estado según sus transiciones.
+// La firma indica a qué partición va cada transición.
 func computeSignature(dfa *DFA, state string, partitions []map[string]bool) string {
 	signatures := []string{}
 
-	// For each symbol, record which partition the next state belongs to
+	// Para cada símbolo, registra a qué partición pertenece el estado destino
 	for _, symbol := range dfa.Alphabet {
 		nextState, exists := dfa.Transitions[state][symbol]
 		if !exists {
-			signatures = append(signatures, "∅")
+			signatures = append(signatures, "∅") // No hay transición para este símbolo
 			continue
 		}
 
-		// Encuentra a qué partición pertenece el estado destino
+		// Busca a qué partición pertenece el estado destino
 		for i, partition := range partitions {
 			if partition[nextState] {
 				signatures = append(signatures, fmt.Sprintf("%d", i))
@@ -178,14 +176,15 @@ func computeSignature(dfa *DFA, state string, partitions []map[string]bool) stri
 	return fmt.Sprintf("%v", signatures)
 }
 
-// buildMinimizedDFA construye el DFA mínimo a partir de las particiones
+// buildMinimizedDFA construye el DFA minimizado a partir de las particiones finales.
+// Cada partición se convierte en un estado del nuevo DFA.
 func buildMinimizedDFA(dfa *DFA, partitions []map[string]bool) *DFA {
-	// Mapea estados originales a sus representantes
+	// Mapea cada estado original a su representante de partición
 	stateToRep := make(map[string]string)
 	partitionReps := make([]string, len(partitions))
 
 	for i, partition := range partitions {
-		// Elige un representante para esta partición
+		// Elige un representante para la partición (el primero que encuentre)
 		var rep string
 		for state := range partition {
 			rep = state
@@ -193,7 +192,7 @@ func buildMinimizedDFA(dfa *DFA, partitions []map[string]bool) *DFA {
 		}
 		partitionReps[i] = rep
 
-		// Asigna todos los estados de esta partición a este representante
+		// Asigna todos los estados de la partición a ese representante
 		for state := range partition {
 			stateToRep[state] = rep
 		}
@@ -205,7 +204,7 @@ func buildMinimizedDFA(dfa *DFA, partitions []map[string]bool) *DFA {
 	var newStart string
 
 	for i, rep := range partitionReps {
-		// Usa un nombre más simple para los estados
+		// Asigna nombres simples a los nuevos estados (q0, q1, ...)
 		newName := fmt.Sprintf("q%d", i)
 		newStates = append(newStates, newName)
 
@@ -220,12 +219,9 @@ func buildMinimizedDFA(dfa *DFA, partitions []map[string]bool) *DFA {
 		}
 	}
 
-	// Asegura que el estado inicial exista
-	if newStart == "" {
-		// Si por alguna razón no se asignó un estado inicial, usa el primer estado
-		if len(newStates) > 0 {
-			newStart = newStates[0]
-		}
+	// Si no se asignó estado inicial, usa el primero
+	if newStart == "" && len(newStates) > 0 {
+		newStart = newStates[0]
 	}
 
 	// Crea las transiciones del nuevo DFA
@@ -237,7 +233,7 @@ func buildMinimizedDFA(dfa *DFA, partitions []map[string]bool) *DFA {
 
 		for _, symbol := range dfa.Alphabet {
 			if nextState, exists := dfa.Transitions[rep][symbol]; exists {
-				// Encuentra el nuevo nombre para el estado destino
+				// Busca el nuevo nombre para el estado destino
 				nextRep := stateToRep[nextState]
 				for j, otherRep := range partitionReps {
 					if otherRep == nextRep {
@@ -249,6 +245,7 @@ func buildMinimizedDFA(dfa *DFA, partitions []map[string]bool) *DFA {
 		}
 	}
 
+	// Devuelve el nuevo DFA minimizado
 	return &DFA{
 		States:      newStates,
 		Alphabet:    dfa.Alphabet,

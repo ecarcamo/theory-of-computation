@@ -1,4 +1,4 @@
-// Package nfa provides functionality to simulate a non-deterministic finite automaton (NFA).
+// Package nfa proporciona funcionalidad para simular un autómata finito no determinista (NFA).
 package nfa
 
 import (
@@ -6,28 +6,29 @@ import (
 	"unicode/utf8"
 )
 
-// stateSet represents a set of NFA states.
+// stateSet representa un conjunto de estados del NFA.
 type stateSet map[*thompson.State]struct{}
 
-// add adds a state to the state set.
+// add agrega un estado al conjunto de estados.
 func add(m stateSet, s *thompson.State) { m[s] = struct{}{} }
 
-// epsilonClosure computes the epsilon closure of a set of states.
+// epsilonClosure calcula el cierre epsilon de un conjunto de estados.
+// Devuelve todos los estados alcanzables desde los estados iniciales usando solo transiciones epsilon.
 func epsilonClosure(start stateSet) stateSet {
 	stack := make([]*thompson.State, 0, len(start))
 	seen := make(stateSet)
 
-	// initialize stack and seen with start states
+	// Inicializa la pila y el conjunto visto con los estados iniciales
 	for s := range start {
 		stack = append(stack, s)
 		seen[s] = struct{}{}
 	}
 
 	for len(stack) > 0 {
-		// pop
+		// Extrae el último estado de la pila
 		s := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
-		// explore epsilon transitions
+		// Explora las transiciones epsilon desde el estado actual
 		for _, nxt := range s.Trans[thompson.Epsilon] {
 			if _, ok := seen[nxt]; !ok {
 				seen[nxt] = struct{}{}
@@ -38,7 +39,8 @@ func epsilonClosure(start stateSet) stateSet {
 	return seen
 }
 
-// move computes the set of states reachable from 'from' on input 'sym'.
+// move calcula el conjunto de estados alcanzables desde 'from' con el símbolo 'sym'.
+// Devuelve todos los estados destino para ese símbolo.
 func move(from stateSet, sym rune) stateSet {
 	out := make(stateSet)
 	for s := range from {
@@ -49,13 +51,14 @@ func move(from stateSet, sym rune) stateSet {
 	return out
 }
 
-// Simulate returns true if input is accepted by the NFA.
+// Simulate retorna true si la cadena de entrada es aceptada por el NFA.
+// Simula el procesamiento de la cadena sobre el autómata, considerando transiciones epsilon.
 func Simulate(nfa *thompson.NFA, input string) bool {
 	current := make(stateSet)
 	add(current, nfa.Start)
 	current = epsilonClosure(current)
 
-	// iterate runes (supports UTF-8, including '0','1','a','b', etc.)
+	// Itera sobre cada símbolo (rune) de la cadena de entrada (soporta UTF-8)
 	for len(input) > 0 {
 		r, size := utf8.DecodeRuneInString(input)
 		input = input[size:]
@@ -64,6 +67,7 @@ func Simulate(nfa *thompson.NFA, input string) bool {
 		current = epsilonClosure(next)
 	}
 
+	// Verifica si el estado de aceptación está en el conjunto actual
 	_, ok := current[nfa.Accept]
 	return ok
 }

@@ -1,4 +1,4 @@
-// Package config provides utilities for regex formatting and conversion to postfix notation.
+// Package config provee utilidades para el formateo de expresiones regulares y su conversión a notación postfija.
 package config
 
 import (
@@ -7,26 +7,26 @@ import (
 	"unicode"
 )
 
-// OperatorPrecedence defines precedence for regex operators.
+// OperatorPrecedence define la precedencia de los operadores en expresiones regulares.
 var OperatorPrecedence = map[rune]int{
-	'(': 1,
-	'|': 2,
-	'.': 3,
-	'*': 4,
+	'(': 1, // Paréntesis
+	'|': 2, // Unión
+	'.': 3, // Concatenación
+	'*': 4, // Estrella de Kleene
 }
 
-// Keep only if you use them elsewhere; otherwise you can remove these slices.
+// Listas de operadores para referencia rápida.
 var (
-	AllOperators    = []rune{'|', '.', '*'}
-	BinaryOperators = []rune{'|', '.'}
+	AllOperators    = []rune{'|', '.', '*'} // Todos los operadores soportados
+	BinaryOperators = []rune{'|', '.'}      // Operadores binarios
 )
 
-// IsAlphanumeric returns true if r is a letter, digit, or epsilon.
+// IsAlphanumeric retorna true si r es una letra, dígito o epsilon.
 func IsAlphanumeric(r rune) bool {
 	return unicode.IsLetter(r) || unicode.IsDigit(r) || r == 'ε'
 }
 
-// ContainsRune checks if a slice contains a specific rune.
+// ContainsRune verifica si un slice contiene un rune específico.
 func ContainsRune(slice []rune, r rune) bool {
 	for _, x := range slice {
 		if x == r {
@@ -36,9 +36,9 @@ func ContainsRune(slice []rune, r rune) bool {
 	return false
 }
 
-// shouldInsertConcat returns true if a '.' should be inserted between c1 and c2.
+// shouldInsertConcat determina si se debe insertar un operador de concatenación '.' entre c1 y c2.
+// Se inserta cuando: (símbolo, '*' o ')') seguido de (símbolo o '(')
 func shouldInsertConcat(c1, c2 rune) bool {
-	// concat when: (symbol or '*' or ')') followed by (symbol or '(')
 	if (IsAlphanumeric(c1) || c1 == '*' || c1 == ')') &&
 		(IsAlphanumeric(c2) || c2 == '(') {
 		return true
@@ -46,7 +46,7 @@ func shouldInsertConcat(c1, c2 rune) bool {
 	return false
 }
 
-// FormatRegex inserts explicit concatenation operators '.' where needed.
+// FormatRegex inserta operadores de concatenación explícitos '.' donde sean necesarios en la expresión regular.
 func FormatRegex(regex string) string {
 	var b strings.Builder
 	chars := []rune(regex)
@@ -54,7 +54,7 @@ func FormatRegex(regex string) string {
 
 	for i < len(chars) {
 		c1 := chars[i]
-		// preserve escapes
+		// Preserva caracteres escapados
 		if c1 == '\\' && i+1 < len(chars) {
 			b.WriteRune(c1)
 			b.WriteRune(chars[i+1])
@@ -73,12 +73,13 @@ func FormatRegex(regex string) string {
 	return b.String()
 }
 
-// normalizeEpsilon replaces all variants of epsilon with 'ε'.
+// normalizeEpsilon reemplaza todas las variantes de epsilon por 'ε'.
 func normalizeEpsilon(s string) string {
 	return strings.ReplaceAll(s, "𝜀", "ε")
 }
 
-// ExpandRegexExtensions expands '+' and '?' in the regex to their basic equivalents.
+// ExpandRegexExtensions expande los operadores '+' y '?' en la expresión regular a sus equivalentes básicos.
+// '+' se convierte en X.X* y '?' en (X|ε)
 func ExpandRegexExtensions(expr string) string {
 	expr = normalizeEpsilon(expr)
 	in := []rune(expr)
@@ -87,29 +88,29 @@ func ExpandRegexExtensions(expr string) string {
 	for i := 0; i < len(in); i++ {
 		c := in[i]
 
-		// preserve escapes
+		// Preserva caracteres escapados
 		if c == '\\' && i+1 < len(in) {
 			out = append(out, c, in[i+1])
 			i++
 			continue
 		}
-		// handle '+' and '?'
+		// Maneja los operadores '+' y '?'
 		if (c == '+') || (c == '?') {
 			start, end := lastOperandBounds(out)
 			X := string(out[start:end])
 
-			// replace last operand with its expansion
-			// '+' -> X.X*
-			// '?' -> (X|ε)
+			// Reemplaza el último operando por su expansión
 			tmp := make([]rune, 0, len(out))
 			tmp = append(tmp, out[:start]...)
 
 			if c == '+' {
+				// X+ → X.X*
 				tmp = append(tmp, []rune(X)...)
 				tmp = append(tmp, '.')
 				tmp = append(tmp, []rune(X)...)
 				tmp = append(tmp, '*')
 			} else {
+				// X? → (X|ε)
 				tmp = append(tmp, '(')
 				tmp = append(tmp, []rune(X)...)
 				tmp = append(tmp, '|', 'ε', ')')
@@ -124,15 +125,15 @@ func ExpandRegexExtensions(expr string) string {
 	return string(out)
 }
 
-// lastOperandBounds finds the start and end indices of the last operand in out.
-// An operand can be a single symbol, an escaped symbol, or a parenthesized group
+// lastOperandBounds encuentra los índices de inicio y fin del último operando en out.
+// Un operando puede ser un símbolo, un símbolo escapado o un grupo entre paréntesis.
 func lastOperandBounds(out []rune) (int, int) {
 	if len(out) == 0 {
 		return 0, 0
 	}
 	j := len(out) - 1
 
-	// case 1: parenthesized group
+	// Caso 1: grupo entre paréntesis
 	if out[j] == ')' {
 		depth := 0
 		for j >= 0 {
@@ -146,19 +147,20 @@ func lastOperandBounds(out []rune) (int, int) {
 			}
 			j--
 		}
-		return 0, len(out) // fallback if unbalanced
+		return 0, len(out) // fallback si los paréntesis están desbalanceados
 	}
 
-	// case 2: escaped rune
+	// Caso 2: símbolo escapado
 	if j > 0 && out[j-1] == '\\' {
 		return j - 1, j + 1
 	}
 
-	// case 3: single rune
+	// Caso 3: símbolo simple
 	return j, j + 1
 }
 
-// InfixToPostfix converts an infix regex expression to postfix notation using the Shunting Yard algorithm.
+// InfixToPostfix convierte una expresión regular en notación infija a notación postfija usando el algoritmo Shunting Yard.
+// Incluye prints para depuración paso a paso.
 func InfixToPostfix(rawRegex string) string {
 	expr := rawRegex
 	var output strings.Builder

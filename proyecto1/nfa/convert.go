@@ -18,10 +18,12 @@ type DFA struct {
 }
 
 // NFAtoDFA convierte un NFA en un DFA utilizando el algoritmo de subconjuntos.
+// Recibe un NFA y el alfabeto, y retorna el DFA equivalente.
 func NFAtoDFA(nfa *thompson.NFA, alphabet []rune) *DFA {
+	// stateSet representa un conjunto de estados del NFA
 	type stateSet map[*thompson.State]struct{}
 
-	// Genera un nombre único para cada conjunto de estados
+	// setName genera un nombre único para cada conjunto de estados (por sus IDs)
 	setName := func(set stateSet) string {
 		ids := []int{}
 		for s := range set {
@@ -35,7 +37,7 @@ func NFAtoDFA(nfa *thompson.NFA, alphabet []rune) *DFA {
 		return str
 	}
 
-	// Calcula el cierre-epsilon de un conjunto de estados
+	// epsilonClosure calcula el cierre-epsilon de un conjunto de estados
 	epsilonClosure := func(states stateSet) stateSet {
 		stack := []*thompson.State{}
 		closure := make(stateSet)
@@ -56,7 +58,7 @@ func NFAtoDFA(nfa *thompson.NFA, alphabet []rune) *DFA {
 		return closure
 	}
 
-	// Calcula los estados alcanzables con un símbolo desde un conjunto de estados
+	// move calcula los estados alcanzables con un símbolo desde un conjunto de estados
 	move := func(states stateSet, sym rune) stateSet {
 		out := make(stateSet)
 		for s := range states {
@@ -68,11 +70,11 @@ func NFAtoDFA(nfa *thompson.NFA, alphabet []rune) *DFA {
 	}
 
 	// Estructuras para construir el DFA
-	dfaStates := []string{}
-	dfaTransitions := map[string]map[rune]string{}
-	dfaAccepting := map[string]bool{}
-	seen := map[string]stateSet{}
-	queue := []stateSet{}
+	dfaStates := []string{}                        // Nombres de los estados del DFA
+	dfaTransitions := map[string]map[rune]string{} // Transiciones del DFA
+	dfaAccepting := map[string]bool{}              // Estados de aceptación del DFA
+	seen := map[string]stateSet{}                  // Conjuntos de estados ya procesados
+	queue := []stateSet{}                          // Cola para BFS de conjuntos de estados
 
 	// Inicializar con el cierre-epsilon del estado inicial del NFA
 	startSet := epsilonClosure(stateSet{nfa.Start: {}})
@@ -86,9 +88,10 @@ func NFAtoDFA(nfa *thompson.NFA, alphabet []rune) *DFA {
 		dfaAccepting[startName] = true
 	}
 
-	subsetNames := map[string]string{} // nombre del conjunto → letra
+	subsetNames := map[string]string{} // nombre del conjunto → letra (no se usa en la construcción final)
 	letters := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
+	// Algoritmo principal: construcción del DFA por subconjuntos
 	for len(queue) > 0 {
 		currentSet := queue[0]
 		queue = queue[1:]
@@ -96,14 +99,16 @@ func NFAtoDFA(nfa *thompson.NFA, alphabet []rune) *DFA {
 		dfaTransitions[currentName] = map[rune]string{}
 		for _, sym := range alphabet {
 			if sym == thompson.Epsilon {
-				continue
+				continue // No se procesan transiciones epsilon en el DFA
 			}
+			// Calcula el cierre-epsilon de los estados alcanzados por el símbolo
 			nextSet := epsilonClosure(move(currentSet, sym))
 			if len(nextSet) == 0 {
-				continue
+				continue // No hay transición para este símbolo
 			}
 			nextName := setName(nextSet)
 			if _, ok := seen[nextName]; !ok {
+				// Si el conjunto de estados no ha sido visto, agrégalo
 				seen[nextName] = nextSet
 				dfaStates = append(dfaStates, nextName)
 				queue = append(queue, nextSet)
@@ -113,10 +118,12 @@ func NFAtoDFA(nfa *thompson.NFA, alphabet []rune) *DFA {
 			}
 			dfaTransitions[currentName][sym] = nextName
 		}
+		// Asigna una letra al conjunto (solo para visualización, no se usa en el DFA final)
 		idx := len(subsetNames)
 		subsetNames[setName(currentSet)] = string(letters[idx])
 	}
 
+	// Retorna el DFA construido
 	return &DFA{
 		States:      dfaStates,
 		Alphabet:    alphabet,

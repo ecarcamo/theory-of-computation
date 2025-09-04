@@ -121,6 +121,54 @@ Expresiones utilizadas:
 
 ¿Qué hace cada parte?
 
+---
+
+## 🚦 Flujo del proyecto: de la entrada al resultado
+
+A continuación se muestra el flujo completo del proyecto, desde que se ingresa una línea en `input.txt` hasta la obtención de los archivos gráficos y la simulación. Se utiliza como ejemplo la expresión:
+
+```
+(a*|b*)+;aaaa
+```
+
+**1. Lectura de la entrada**
+- El programa lee la línea y la separa en dos partes: la expresión regular `(a*|b*)+` y la cadena de prueba `aaaa`.
+
+**2. Expansión y formateo de la expresión regular**
+- Se expanden los operadores extendidos: `+` se convierte en su forma básica (`X+ → X.X*`).
+- Se insertan operadores de concatenación explícitos `.` donde son necesarios.
+- Ejemplo expandido y formateado: `a*|b*.(a*|b*)*`
+
+**3. Conversión a notación postfija**
+- Se aplica el algoritmo Shunting Yard para convertir la expresión a notación postfija.
+- Ejemplo: `a* b* | a* b* | * .`
+
+**4. Construcción del AST**
+- Se construye el árbol de sintaxis abstracta (AST) a partir de la expresión postfija.
+
+**5. Construcción del NFA (Thompson)**
+- Se genera el autómata finito no determinista (NFA) usando el algoritmo de Thompson sobre el AST.
+
+**6. Exportación y visualización**
+- Se exporta el NFA a un archivo DOT y se genera la imagen PNG correspondiente.
+- Ejemplo de archivos generados: `dotout/nfa_002.dot`, `pngout/nfa_002.png`
+
+**7. Simulación de la cadena**
+- Se simula la cadena `aaaa` sobre el NFA para verificar si es aceptada.
+- El resultado se muestra en consola: `w ∈ L(r)? sí   (w = "aaaa")`
+
+**8. Conversión NFA → DFA**
+- Se convierte el NFA a un DFA usando el algoritmo de subconjuntos.
+- Se exporta el DFA a DOT y PNG: `dotout/dfa_002.dot`, `pngout/dfa_002.png`
+
+**9. Minimización del DFA**
+- Se minimiza el DFA y se generan los archivos DOT y PNG del DFA minimizado: `dotout/min_dfa_002.dot`, `pngout/min_dfa_002.png`
+
+**10. Resultado final**
+- El usuario obtiene los archivos gráficos y la respuesta de aceptación para cada línea de entrada.
+
+---
+
 - config/config.go
      - ExpandRegexExtensions: `X+ → X.X*`, `X? → (X|ε)` (sin dejar +/? en la expresión).
      - FormatRegex: inserta . para concatenaciones implícitas.

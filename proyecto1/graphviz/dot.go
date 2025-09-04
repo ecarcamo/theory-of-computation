@@ -12,6 +12,7 @@ import (
 )
 
 // WriteDOT escribe la representación DOT de un NFA en la ruta especificada.
+// El archivo DOT puede ser visualizado con Graphviz para ver el autómata.
 func WriteDOT(nfa *thompson.NFA, path string) error {
 	f, err := os.Create(path)
 	if err != nil {
@@ -65,6 +66,7 @@ func WriteDOT(nfa *thompson.NFA, path string) error {
 }
 
 // WriteDOTDFA escribe la representación DOT de un DFA en la ruta especificada.
+// Asigna letras a los estados para mayor legibilidad en el grafo.
 func WriteDOTDFA(dfa *nfa.DFA, path string) error {
 	f, err := os.Create(path)
 	if err != nil {
@@ -97,6 +99,7 @@ func WriteDOTDFA(dfa *nfa.DFA, path string) error {
 		subsetNames[dfa.Start] = startName
 	}
 
+	// Encabezado del grafo DOT
 	fmt.Fprintln(f, "digraph DFA {")
 	fmt.Fprintln(f, "  rankdir=LR;")
 	fmt.Fprintln(f, "  node [shape=circle];")
@@ -115,7 +118,7 @@ func WriteDOTDFA(dfa *nfa.DFA, path string) error {
 		}
 	}
 
-	// Transiciones
+	// Transiciones entre estados
 	for from, trans := range dfa.Transitions {
 		for sym, to := range trans {
 			fromName := subsetNames[from]
@@ -128,7 +131,9 @@ func WriteDOTDFA(dfa *nfa.DFA, path string) error {
 	return nil
 }
 
-// GeneratePNGFromDot genera una imagen PNG a partir de un archivo DOT usando el comando 'dot'.
+// GeneratePNGFromDot genera una imagen PNG a partir de un archivo DOT usando el comando 'dot' de Graphviz.
+// dotPath: ruta al archivo DOT de entrada.
+// pngPath: ruta al archivo PNG de salida.
 func GeneratePNGFromDot(dotPath, pngPath string) error {
 	cmd := exec.Command("dot", "-Tpng", dotPath, "-o", pngPath)
 	cmd.Stdout = os.Stdout
