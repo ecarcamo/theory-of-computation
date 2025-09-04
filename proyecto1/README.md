@@ -89,14 +89,13 @@ dot -V
 Clonar el repositorio:
 
 ```
-git clone https://github.com/AscencioSIUU/TeoriaComputacion.git
-cd TeoriaComputacion/labs/lab4
+git clone https://github.com/ecarcamo/theory-of-computation.git
+cd theory-of-computation/proyecto1
 ```
 
 Ejecutar el laboratorio:
 
 ```
-cd ejercicio1
 go run main.go
 ```
 
@@ -105,7 +104,6 @@ go run main.go
 ▶️ Ejecución
 Video de demostración
 
-https://youtu.be/hj7xuHoQCto
 
 ---
 
@@ -113,10 +111,7 @@ https://youtu.be/hj7xuHoQCto
 
 Expresiones utilizadas:
 ```
-(a*|b*)+;aaaa
-((ε|a)|b*)*;abbb
-(a|b)*abb(a|b)*;xxabbx
-0?(1?)?0*;0100
+input.txt
 ```
 
 ¿Qué hace cada parte?
