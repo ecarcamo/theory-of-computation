@@ -3,118 +3,208 @@ Línea 1
   Expandida: (a*|b*)c
   Formateada: (a*|b*).c
   Postfija: a*b*|c.
-  w ∈ L(NFA)? sí   (w = "aac")
-  w ∈ L(DFA)? sí (w = "aac")
-  w ∈ L(minDFA)? sí (w = "aac")
-Línea 3
+  Caso 1: w = "aac"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "abc"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 2
   Regex original: (b|b)*abb(a|b)*
   Expandida: (b|b)*abb(a|b)*
   Formateada: (b|b)*.a.b.b.(a|b)*
   Postfija: bb|*a.b.b.ab|*.
-  w ∈ L(NFA)? sí   (w = "bbabbab")
-  w ∈ L(DFA)? sí (w = "bbabbab")
-  w ∈ L(minDFA)? sí (w = "bbabbab")
-Línea 5
+  Caso 1: w = "bbabbab"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "ababb"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 3
   Regex original: (a|ε)b(a+)c?
   Expandida: (a|ε)b(a.a*)(c|ε)
   Formateada: (a|ε).b.(a.a*).(c|ε)
   Postfija: aε|b.aa*..cε|.
-  w ∈ L(NFA)? sí   (w = "abaaac")
-  w ∈ L(DFA)? sí (w = "abaaac")
-  w ∈ L(minDFA)? sí (w = "abaaac")
-Línea 7
+  Caso 1: w = "abaaac"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "bc"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 4
   Regex original: (a|b)*a(a|b)(a|b)
   Expandida: (a|b)*a(a|b)(a|b)
   Formateada: (a|b)*.a.(a|b).(a|b)
   Postfija: ab|*a.ab|.ab|.
-  w ∈ L(NFA)? sí   (w = "aaab")
-  w ∈ L(DFA)? sí (w = "aaab")
-  w ∈ L(minDFA)? sí (w = "aaab")
-Línea 9
+  Caso 1: w = "aaab"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "bbb"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 5
   Regex original: b*ab?
   Expandida: b*a(b|ε)
   Formateada: b*.a.(b|ε)
   Postfija: b*a.bε|.
-  w ∈ L(NFA)? sí   (w = "bbab")
-  w ∈ L(DFA)? sí (w = "bbab")
-  w ∈ L(minDFA)? sí (w = "bbab")
-Línea 11
+  Caso 1: w = "bbab"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? no
+  Caso 2: w = "bbb"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 6
   Regex original: b+abc+
   Expandida: b.b*abc.c*
   Formateada: b.b*.a.b.c.c*
   Postfija: bb*.a.b.c.c*.
-  w ∈ L(NFA)? sí   (w = "bbabccc")
-  w ∈ L(DFA)? sí (w = "bbabccc")
-  w ∈ L(minDFA)? sí (w = "bbabccc")
-Línea 13
+  Caso 1: w = "bbabccc"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "bab"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 7
   Regex original: ab*ab*
   Expandida: ab*ab*
   Formateada: a.b*.a.b*
   Postfija: ab*.a.b*.
-  w ∈ L(NFA)? sí   (w = "aab")
-  w ∈ L(DFA)? sí (w = "aab")
-  w ∈ L(minDFA)? sí (w = "aab")
-Línea 15
+  Caso 1: w = "aab"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "abb"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 8
   Regex original: 0(0|1)*0
   Expandida: 0(0|1)*0
   Formateada: 0.(0|1)*.0
   Postfija: 001|*.0.
-  w ∈ L(NFA)? sí   (w = "010")
-  w ∈ L(DFA)? sí (w = "010")
-  w ∈ L(minDFA)? sí (w = "010")
-Línea 17
+  Caso 1: w = "010"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "01"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 9
   Regex original: ((ε|0)1*)*
   Expandida: ((ε|0)1*)*
   Formateada: ((ε|0).1*)*
   Postfija: ε0|1*.*
-  w ∈ L(NFA)? sí   (w = "101001")
-  w ∈ L(DFA)? sí (w = "101001")
-  w ∈ L(minDFA)? sí (w = "101001")
-Línea 19
+  Caso 1: w = "101001"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "2"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 10
   Regex original: (0|1)*0(0|1)(0|1)
   Expandida: (0|1)*0(0|1)(0|1)
   Formateada: (0|1)*.0.(0|1).(0|1)
   Postfija: 01|*0.01|.01|.
-  w ∈ L(NFA)? sí   (w = "011")
-  w ∈ L(DFA)? sí (w = "011")
-  w ∈ L(minDFA)? sí (w = "011")
-Línea 21
+  Caso 1: w = "011"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "101"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 11
   Regex original: (00)*(11)*
   Expandida: (00)*(11)*
   Formateada: (0.0)*.(1.1)*
   Postfija: 00.*11.*.
-  w ∈ L(NFA)? sí   (w = "001111")
-  w ∈ L(DFA)? sí (w = "001111")
-  w ∈ L(minDFA)? sí (w = "001111")
-Línea 23
+  Caso 1: w = "001111"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "0110"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 12
   Regex original: (0|1)1*(0|1)
   Expandida: (0|1)1*(0|1)
   Formateada: (0|1).1*.(0|1)
   Postfija: 01|1*.01|.
-  w ∈ L(NFA)? sí   (w = "0110")
-  w ∈ L(DFA)? sí (w = "0110")
-  w ∈ L(minDFA)? sí (w = "0110")
-Línea 25
+  Caso 1: w = "0110"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "0010"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 13
   Regex original: 0?(1|ε)?0*
   Expandida: (0|ε)((1|ε)|ε)0*
   Formateada: (0|ε).((1|ε)|ε).0*
   Postfija: 0ε|1ε|ε|.0*.
-  w ∈ L(NFA)? sí   (w = "1000")
-  w ∈ L(DFA)? sí (w = "1000")
-  w ∈ L(minDFA)? sí (w = "1000")
-Línea 27
+  Caso 1: w = "1000"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "101"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 14
   Regex original: ((1?)*)*
   Expandida: (((1|ε))*)*
   Formateada: (((1|ε))*)*
   Postfija: 1ε|**
-  w ∈ L(NFA)? sí   (w = "1111")
-  w ∈ L(DFA)? sí (w = "1111")
-  w ∈ L(minDFA)? sí (w = "1111")
-Línea 29
+  Caso 1: w = "1111"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "10"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
+Línea 15
   Regex original: (01)*(10)*
   Expandida: (01)*(10)*
   Formateada: (0.1)*.(1.0)*
   Postfija: 01.*10.*.
-  w ∈ L(NFA)? sí   (w = "0110")
-  w ∈ L(DFA)? sí (w = "0110")
-  w ∈ L(minDFA)? sí (w = "0110")
+  Caso 1: w = "0110"
+    w ∈ L(NFA)?   sí
+    w ∈ L(DFA)?   sí
+    w ∈ L(minDFA)? sí
+  Caso 2: w = "010"
+    w ∈ L(NFA)?   no
+    w ∈ L(DFA)?   no
+    w ∈ L(minDFA)? no
+
