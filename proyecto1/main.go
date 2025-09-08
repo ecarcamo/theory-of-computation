@@ -1,17 +1,11 @@
 // /proyecto1/main.go
-// Este archivo es parte del proyecto proyecto1 para la materia de Teoría de la Computación.
-// Implementa una herramienta de línea de comandos que lee expresiones regulares desde un archivo,
-// construye sus NFAs usando la construcción de Thompson, y genera archivos DOT y PNG para visualización.
-// También simula el NFA con una cadena dada para verificar aceptación.
-// Soporta extensiones de regex como estrella de Kleene, unión, concatenación, entre otros.
-// El paquete main implementa la funcionalidad principal para procesar expresiones regulares,
-// construir autómatas (NFA, DFA y DFA minimizado) y generar sus representaciones gráficas.
 package main
 
 import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -29,7 +23,22 @@ func main() {
 	inPath := flag.String("in", "input.txt", "ruta al archivo de entrada")
 	dotDir := flag.String("dotout", "dotout", "directorio de salida para archivos DOT")
 	pngDir := flag.String("pngout", "pngout", "directorio de salida para archivos PNG")
-	flag.Parse()
+	outPath := flag.String("out", "output.txt", "archivo de salida para logs")
+	flag.Parse() // Analiza los flags
+
+	// Abrir el archivo de salida
+	outFile, err := os.Create(*outPath)
+	if err != nil {
+		log.Fatalf("no se pudo crear archivo de salida: %v", err)
+	}
+	defer outFile.Close()
+
+	// MultiWriter: escribe en consola (stdout) y en output.txt al mismo tiempo
+	mw := io.MultiWriter(os.Stdout, outFile)
+	logBoth := log.New(mw, "", 0)
+
+	// Logger solo consola
+	logConsole := log.New(os.Stdout, "", 0)
 
 	// Abrir el archivo de entrada
 	f, err := os.Open(*inPath)
@@ -50,115 +59,121 @@ func main() {
 			continue
 		}
 
-		// Separar la línea en expresión regular y cadena de prueba usando ';'
-		parts := strings.SplitN(raw, ";", 2)
-		if len(parts) != 2 {
-			log.Printf("Línea %d: formato inválido. Se esperaba 'regex;w'. Se encontró: %q\n", lineNo, raw)
-			continue
-		}
-		r := strings.TrimSpace(parts[0])
-		w := strings.TrimSpace(parts[1])
-		if r == "" {
-			log.Printf("Línea %d: regex vacía antes de ';'\n", lineNo)
-			continue
-		}
-		if w == "" {
-			log.Printf("Línea %d: cadena w vacía después de ';'\n", lineNo)
-			continue
-		}
+		// Solo lineas impares.
+		generateFiles := (lineNo%2 == 1)
 
-		// Expande y formatea la expresión regular, luego la convierte a notación postfija
-		expanded := config.ExpandRegexExtensions(r) // Expande extensiones como '+', '?', etc.
-		formatted := config.FormatRegex(expanded)   // Añade concatenaciones explícitas
-		postfix := config.InfixToPostfix(formatted) // Convierte a notación postfija
-
-		// Muestra información de la expresión regular procesada
-		fmt.Printf("Línea %d\n", lineNo)
-		fmt.Printf("  Regex original: %s\n", r)
-		fmt.Printf("  Expandida: %s\n", expanded)
-		fmt.Printf("  Formateada: %s\n", formatted)
-		fmt.Printf("  Postfija: %s\n", postfix)
-
-		// Construye el AST (árbol de sintaxis) desde la expresión postfija
-		ast, err := regex.BuildAST(postfix)
-		if err != nil {
-			log.Printf("  Error de AST: %v\n\n", err)
-			continue
-		}
-
-		// Construye el NFA usando el algoritmo de Thompson
-		nfaObj, err := thompson.Build(ast)
-		if err != nil {
-			log.Printf("  Error de Thompson: %v\n\n", err)
-			continue
-		}
-
-		// Genera archivos DOT y PNG para visualizar el NFA
-		dotPath := filepath.Join(*dotDir, fmt.Sprintf("nfa_%03d.dot", lineNo))
-		pngPath := filepath.Join(*pngDir, fmt.Sprintf("nfa_%03d.png", lineNo))
-
-		if err := graphviz.WriteDOT(nfaObj, dotPath); err != nil {
-			log.Printf("  Error DOT: %v\n\n", err)
-			continue
-		}
-		fmt.Printf("  DOT guardado: %s\n", dotPath)
-
-		if err := graphviz.GeneratePNGFromDot(dotPath, pngPath); err != nil {
-			log.Printf("  Error PNG (¿está instalado Graphviz?): %v\n\n", err)
-		} else {
-			fmt.Printf("  PNG guardado: %s\n", pngPath)
-		}
-
-		// Simula el NFA con la cadena w para verificar si es aceptada
-		accepted := nfa.Simulate(nfaObj, w)
-		fmt.Printf("  w ∈ L(NFA)? %s   (w = %q)\n", map[bool]string{true: "sí", false: "no"}[accepted], w)
-
-		// Obtiene el alfabeto de la expresión regular para la conversión NFA→DFA
-		alphabet := []rune{}
-		for _, c := range formatted {
-			if config.IsAlphanumeric(c) && c != 'ε' && !config.ContainsRune(alphabet, c) {
-				alphabet = append(alphabet, c)
+		if generateFiles {
+			// Separar la línea en expresión regular y cadena de prueba usando ';'
+			parts := strings.SplitN(raw, ";", 2)
+			if len(parts) != 2 {
+				logConsole.Printf("Línea %d: formato inválido. Se esperaba 'regex;w'. Se encontró: %q\n", lineNo, raw)
+				continue
 			}
-		}
+			r := strings.TrimSpace(parts[0])
+			w := strings.TrimSpace(parts[1])
+			if r == "" {
+				logConsole.Printf("Línea %d: regex vacía antes de ';'\n", lineNo)
+				continue
+			}
+			if w == "" {
+				logConsole.Printf("Línea %d: cadena w vacía después de ';'\n", lineNo)
+				continue
+			}
 
-		// Convierte el NFA a DFA usando el algoritmo de subconjuntos
-		dfaObj := nfa.NFAtoDFA(nfaObj, alphabet)
-		dfaDotPath := filepath.Join(*dotDir, fmt.Sprintf("dfa_%03d.dot", lineNo))
-		dfaPngPath := filepath.Join(*pngDir, fmt.Sprintf("dfa_%03d.png", lineNo))
+			// Expande y formatea la expresión regular, luego la convierte a notación postfija
+			expanded := config.ExpandRegexExtensions(r)
+			formatted := config.FormatRegex(expanded)
+			postfix := config.InfixToPostfix(formatted)
 
-		dfaAccepted := nfa.SimulateDFA(dfaObj, w)
-		fmt.Printf("  w ∈ L(DFA)? %s\n", map[bool]string{true: "sí", false: "no"}[dfaAccepted])
+			// Muestra información de la expresión regular procesada
+			logBoth.Printf("Línea %d\n", lineNo)
+			logBoth.Printf("  Regex original: %s\n", r)
+			logBoth.Printf("  Expandida: %s\n", expanded)
+			logBoth.Printf("  Formateada: %s\n", formatted)
+			logBoth.Printf("  Postfija: %s\n", postfix)
 
-		if err := graphviz.WriteDOTDFA(dfaObj, dfaDotPath); err != nil {
-			log.Printf("  Error DOT DFA: %v\n\n", err)
-			continue
-		}
-		fmt.Printf("  DOT DFA guardado: %s\n", dfaDotPath)
+			// Construye el AST (árbol de sintaxis) desde la expresión postfija
+			ast, err := regex.BuildAST(postfix)
+			if err != nil {
+				logConsole.Printf("  Error de AST: %v\n\n", err)
+				continue
+			}
 
-		if err := graphviz.GeneratePNGFromDot(dfaDotPath, dfaPngPath); err != nil {
-			log.Printf("  Error PNG DFA: %v\n\n", err)
-		} else {
-			fmt.Printf("  PNG DFA guardado: %s\n", dfaPngPath)
-		}
+			// Construye el NFA usando el algoritmo de Thompson
+			nfaObj, err := thompson.Build(ast)
+			if err != nil {
+				logConsole.Printf("  Error de Thompson: %v\n\n", err)
+				continue
+			}
 
-		// Minimiza el DFA generado
-		minDFA := nfa.MinimizeDFA(dfaObj)
-		minDfaDotPath := filepath.Join(*dotDir, fmt.Sprintf("min_dfa_%03d.dot", lineNo))
-		minDfaPngPath := filepath.Join(*pngDir, fmt.Sprintf("min_dfa_%03d.png", lineNo))
+			// Genera archivos DOT y PNG para visualizar el NFA
+			dotPath := filepath.Join(*dotDir, fmt.Sprintf("nfa_%03d.dot", lineNo))
+			pngPath := filepath.Join(*pngDir, fmt.Sprintf("nfa_%03d.png", lineNo))
 
-		minAccepted := nfa.SimulateDFA(minDFA, w)
-		fmt.Printf("  w ∈ L(minDFA)? %s\n\n", map[bool]string{true: "sí", false: "no"}[minAccepted])
+			if err := graphviz.WriteDOT(nfaObj, dotPath); err != nil {
+				logConsole.Printf("  Error DOT: %v\n\n", err)
+				continue
+			}
+			logConsole.Printf("  DOT guardado: %s\n", dotPath)
 
-		if err := graphviz.WriteDOTDFA(minDFA, minDfaDotPath); err != nil {
-			log.Printf("  Error DOT DFA minimizado: %v\n\n", err)
-			continue
-		}
-		fmt.Printf("  DOT DFA minimizado guardado: %s\n", minDfaDotPath)
+			if err := graphviz.GeneratePNGFromDot(dotPath, pngPath); err != nil {
+				logConsole.Printf("  Error PNG (¿está instalado Graphviz?): %v\n\n", err)
+			} else {
+				logConsole.Printf("  PNG guardado: %s\n", pngPath)
+			}
 
-		if err := graphviz.GeneratePNGFromDot(minDfaDotPath, minDfaPngPath); err != nil {
-			log.Printf("  Error PNG DFA minimizado: %v\n\n", err)
-		} else {
-			fmt.Printf("  PNG DFA minimizado guardado: %s\n", minDfaPngPath)
+			// Simula el NFA con la cadena w
+			accepted := nfa.Simulate(nfaObj, w)
+			logBoth.Printf("  w ∈ L(NFA)? %s   (w = %q)\n",
+				map[bool]string{true: "sí", false: "no"}[accepted], w)
+
+			// Obtiene el alfabeto para la conversión NFA→DFA
+			alphabet := []rune{}
+			for _, c := range formatted {
+				if config.IsAlphanumeric(c) && c != 'ε' && !config.ContainsRune(alphabet, c) {
+					alphabet = append(alphabet, c)
+				}
+			}
+
+			// Convierte el NFA a DFA
+			dfaObj := nfa.NFAtoDFA(nfaObj, alphabet)
+			dfaDotPath := filepath.Join(*dotDir, fmt.Sprintf("dfa_%03d.dot", lineNo))
+			dfaPngPath := filepath.Join(*pngDir, fmt.Sprintf("dfa_%03d.png", lineNo))
+
+			dfaAccepted := nfa.SimulateDFA(dfaObj, w)
+			logBoth.Printf("  w ∈ L(DFA)? %s (w = %q)\n", map[bool]string{true: "sí", false: "no"}[dfaAccepted], w)
+
+			if err := graphviz.WriteDOTDFA(dfaObj, dfaDotPath); err != nil {
+				logConsole.Printf("  Error DOT DFA: %v\n\n", err)
+				continue
+			}
+			logConsole.Printf("  DOT DFA guardado: %s\n", dfaDotPath)
+
+			if err := graphviz.GeneratePNGFromDot(dfaDotPath, dfaPngPath); err != nil {
+				logConsole.Printf("  Error PNG DFA: %v\n\n", err)
+			} else {
+				logConsole.Printf("  PNG DFA guardado: %s\n", dfaPngPath)
+			}
+
+			// Minimiza el DFA
+			minDFA := nfa.MinimizeDFA(dfaObj)
+			minDfaDotPath := filepath.Join(*dotDir, fmt.Sprintf("min_dfa_%03d.dot", lineNo))
+			minDfaPngPath := filepath.Join(*pngDir, fmt.Sprintf("min_dfa_%03d.png", lineNo))
+
+			minAccepted := nfa.SimulateDFA(minDFA, w)
+			logBoth.Printf("  w ∈ L(minDFA)? %s (w = %q)\n", map[bool]string{true: "sí", false: "no"}[minAccepted], w)
+
+			if err := graphviz.WriteDOTDFA(minDFA, minDfaDotPath); err != nil {
+				logConsole.Printf("  Error DOT DFA minimizado: %v\n\n", err)
+				continue
+			}
+			logConsole.Printf("  DOT DFA minimizado guardado: %s\n", minDfaDotPath)
+
+			if err := graphviz.GeneratePNGFromDot(minDfaDotPath, minDfaPngPath); err != nil {
+				logConsole.Printf("  Error PNG DFA minimizado: %v\n\n", err)
+			} else {
+				logConsole.Printf("  PNG DFA minimizado guardado: %s\n", minDfaPngPath)
+			}
 		}
 	}
 
