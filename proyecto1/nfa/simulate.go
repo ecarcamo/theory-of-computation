@@ -6,6 +6,8 @@ import (
 	"unicode/utf8"
 )
 
+// -------------------------- NFA (Thompson) --------------------------
+
 // stateSet representa un conjunto de estados del NFA.
 type stateSet map[*thompson.State]struct{}
 
@@ -70,4 +72,35 @@ func Simulate(nfa *thompson.NFA, input string) bool {
 	// Verifica si el estado de aceptación está en el conjunto actual
 	_, ok := current[nfa.Accept]
 	return ok
+}
+
+// -------------------------- DFA (Tabular) --------------------------
+
+// DFA representa un autómata finito determinista. (Definido en convert.go)
+// type DFA struct { ... }
+// SimulateDFA retorna true si la cadena de entrada es aceptada por el DFA.
+func SimulateDFA(dfa *DFA, input string) bool {
+	if dfa == nil || dfa.Start == "" {
+		return false
+	}
+	state := dfa.Start
+
+	for len(input) > 0 {
+		r, size := utf8.DecodeRuneInString(input)
+		input = input[size:]
+
+		row, ok := dfa.Transitions[state]
+		if !ok {
+			// No hay transiciones desde este estado: rechazo (equivalente a estado trampa)
+			return false
+		}
+		next, ok := row[r]
+		if !ok || next == "" {
+			// No hay transición para este símbolo: rechazo
+			return false
+		}
+		state = next
+	}
+
+	return dfa.Accepting[state]
 }

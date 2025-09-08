@@ -74,10 +74,10 @@ func main() {
 
 		// Muestra información de la expresión regular procesada
 		fmt.Printf("Línea %d\n", lineNo)
-		fmt.Printf("  regex original: %s\n", r)
-		fmt.Printf("  expandida: %s\n", expanded)
-		fmt.Printf("  formateada: %s\n", formatted)
-		fmt.Printf("  postfija: %s\n", postfix)
+		fmt.Printf("  Regex original: %s\n", r)
+		fmt.Printf("  Expandida: %s\n", expanded)
+		fmt.Printf("  Formateada: %s\n", formatted)
+		fmt.Printf("  Postfija: %s\n", postfix)
 
 		// Construye el AST (árbol de sintaxis) desde la expresión postfija
 		ast, err := regex.BuildAST(postfix)
@@ -111,8 +111,7 @@ func main() {
 
 		// Simula el NFA con la cadena w para verificar si es aceptada
 		accepted := nfa.Simulate(nfaObj, w)
-		ans := map[bool]string{true: "sí", false: "no"}[accepted]
-		fmt.Printf("  w ∈ L(r)? %s   (w = %q)\n\n", ans, w)
+		fmt.Printf("  w ∈ L(NFA)? %s   (w = %q)\n", map[bool]string{true: "sí", false: "no"}[accepted], w)
 
 		// Obtiene el alfabeto de la expresión regular para la conversión NFA→DFA
 		alphabet := []rune{}
@@ -126,6 +125,9 @@ func main() {
 		dfaObj := nfa.NFAtoDFA(nfaObj, alphabet)
 		dfaDotPath := filepath.Join(*dotDir, fmt.Sprintf("dfa_%03d.dot", lineNo))
 		dfaPngPath := filepath.Join(*pngDir, fmt.Sprintf("dfa_%03d.png", lineNo))
+
+		dfaAccepted := nfa.SimulateDFA(dfaObj, w)
+		fmt.Printf("  w ∈ L(DFA)? %s\n", map[bool]string{true: "sí", false: "no"}[dfaAccepted])
 
 		if err := graphviz.WriteDOTDFA(dfaObj, dfaDotPath); err != nil {
 			log.Printf("  Error DOT DFA: %v\n\n", err)
@@ -143,6 +145,9 @@ func main() {
 		minDFA := nfa.MinimizeDFA(dfaObj)
 		minDfaDotPath := filepath.Join(*dotDir, fmt.Sprintf("min_dfa_%03d.dot", lineNo))
 		minDfaPngPath := filepath.Join(*pngDir, fmt.Sprintf("min_dfa_%03d.png", lineNo))
+
+		minAccepted := nfa.SimulateDFA(minDFA, w)
+		fmt.Printf("  w ∈ L(minDFA)? %s\n\n", map[bool]string{true: "sí", false: "no"}[minAccepted])
 
 		if err := graphviz.WriteDOTDFA(minDFA, minDfaDotPath); err != nil {
 			log.Printf("  Error DOT DFA minimizado: %v\n\n", err)

@@ -2,7 +2,6 @@
 package config
 
 import (
-	"fmt"
 	"strings"
 	"unicode"
 )
@@ -169,51 +168,41 @@ func InfixToPostfix(rawRegex string) string {
 	for _, c := range expr {
 		switch {
 		case IsAlphanumeric(c):
-			fmt.Printf("Append operando '%c' → output = %s\n", c, output.String())
 			output.WriteRune(c)
 
 		case c == '(':
-			fmt.Printf("Push '(': stack = %q\n", stack)
 			stack = append(stack, c)
 
 		case c == ')':
-			fmt.Println("Encontrado ')', pop hasta '('")
 			for len(stack) > 0 && stack[len(stack)-1] != '(' {
 				top := stack[len(stack)-1]
 				stack = stack[:len(stack)-1]
 				output.WriteRune(top)
-				fmt.Printf("  Pop '%c' → output = %s\n", top, output.String())
 			}
 			if len(stack) > 0 {
-				fmt.Printf("  Pop '(': stack = %q\n", stack)
 				stack = stack[:len(stack)-1]
 			}
 
 		default:
 			precC := OperatorPrecedence[c]
-			fmt.Printf("Operador '%c' (precedencia %d) encontrado\n", c, precC)
 			for len(stack) > 0 {
 				top := stack[len(stack)-1]
 				precTop := OperatorPrecedence[top]
 				if precTop >= precC {
 					stack = stack[:len(stack)-1]
 					output.WriteRune(top)
-					fmt.Printf("  Pop '%c' (prec %d ≥ %d) → output = %s\n", top, precTop, precC, output.String())
 					continue
 				}
 				break
 			}
 			stack = append(stack, c)
-			fmt.Printf("Push '%c': stack = %q\n", c, stack)
 		}
 	}
 
-	fmt.Println("Fin de input, vaciando pila:")
 	for len(stack) > 0 {
 		top := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
 		output.WriteRune(top)
-		fmt.Printf("  Pop '%c' → output = %s\n", top, output.String())
 	}
 	return output.String()
 }
