@@ -1,0 +1,5 @@
+S -> aAa | aa | bBb | bb
+A -> C | a
+B -> C | b
+C -> DE | CE | E | CDE
+D -> A | B | ab
