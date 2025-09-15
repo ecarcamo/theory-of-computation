@@ -32,10 +32,11 @@ C -> S | ε
 ## Requisitos
 
 - Go 1.16 o superior
-- Sistema operativo Linux/Unix
+- Cualquier sistema operativo (Windows, macOS, Linux)
 
 ## Instalación
 
+### Linux/macOS
 ```bash
 git clone <repositorio>
 cd lab7
@@ -43,10 +44,18 @@ go mod init lab7
 go build
 ```
 
+### Windows
+```powershell
+git clone <repositorio>
+cd lab7
+go mod init lab7
+go build
+# Esto generará lab7.exe
+```
+
 ## Uso
 
-### Comandos básicos
-
+### Linux/macOS
 ```bash
 # Mostrar ayuda
 ./lab7 -h
@@ -57,6 +66,36 @@ go build
 # Procesar y guardar resultado
 ./lab7 --in testdata/grammar2.txt --out out/resultado.txt
 ```
+
+### Windows
+```powershell
+# Mostrar ayuda
+.\lab7.exe -h
+
+# Procesar gramática mostrando pasos
+.\lab7.exe --in testdata\grammar1.txt --show-steps
+
+# Procesar y guardar resultado
+.\lab7.exe --in testdata\grammar2.txt --out out\resultado.txt
+```
+
+### Notas importantes por sistema operativo
+
+- **Windows**: 
+  - Usa `\` como separador de directorios en las rutas
+  - El ejecutable tendrá extensión `.exe`
+  - Usa `.\` para ejecutar archivos en el directorio actual
+
+- **macOS/Linux**:
+  - Usa `/` como separador de directorios
+  - Puede necesitar permisos de ejecución: `chmod +x lab7`
+  - Usa `./` para ejecutar archivos en el directorio actual
+
+### Solución de problemas comunes
+
+- **Windows**: Si el comando no se encuentra, asegúrate de estar en el directorio correcto y usar `.\lab7.exe`
+- **macOS/Linux**: Si recibes "permission denied", ejecuta `chmod +x lab7`
+- **Todos los sistemas**: Asegúrate de que los archivos de gramática usen el formato correcto de fin de línea para tu sistema
 
 ### Opciones disponibles
 
