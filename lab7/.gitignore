@@ -1,0 +1,17 @@
+# Binarios compilados
+lab7
+*.exe
+
+# Archivos de salida
+out/
+
+# Archivos temporales del sistema
+.DS_Store
+*~
+
+# Archivos de IDE
+.vscode/
+.idea/
+
+# Dependencias de Go
+vendor/
