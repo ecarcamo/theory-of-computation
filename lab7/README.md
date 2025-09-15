@@ -186,8 +186,7 @@ lab7/
 
 ## Video de demostración
 
-[Enlace al video de demostración]((https://youtu.be/qfX9Iz58Qw8))
-
+Enlace al video de demostración -> [VIDEO YOUTUBE](https://youtu.be/qfX9Iz58Qw8)
 ## Contribuidores
 
 - Esteban Cárcamo - 23016
