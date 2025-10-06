@@ -3,10 +3,20 @@
 
 Este proyecto implementa y analiza la complejidad temporal de tres algoritmos diferentes utilizando Python.
 
+---
+
+## 📚 Ubicación de los Ejercicios
+
+| Ejercicio | Archivo | Descripción |
+|-----------|---------|-------------|
+| **Ejercicios 1-3** | [`COMPLEJIDAD_ejercicio1-3.md`](COMPLEJIDAD_ejercicio1-3.md) | Análisis de complejidad temporal con código C |
+| **Ejercicio 4** | [`EJERCICIO4.md`](EJERCICIO4.md) | Análisis de Búsqueda Lineal (mejor, peor y caso promedio) |
+| **Ejercicio 5** | [`ENUNCIADOS_ejercicio5.md`](ENUNCIADOS_ejercicio5.md) | Análisis de complejidad asintótica (V/F) |
+
 > **📝 Nota Importante:**  
-> El análisis de complejidad (inciso a de cada ejercicio) se encuentra disponible en:
+> El análisis de complejidad de los ejercicios 1-3 también está disponible en:
 > - **Opción 6** del menú principal del programa
-> - **Archivo [`COMPLEJIDAD_ejercicio1-3.md`](COMPLEJIDAD_ejercicio1-3.md)** con el proceso detallado de cada ejercicio
+> - Archivo [`COMPLEJIDAD_ejercicio1-3.md`](COMPLEJIDAD_ejercicio1-3.md)
 >
 > **🎥 Video Explicativo:**  
 > [Ver video en YouTube](https://youtu.be/gMaGesomW88)
