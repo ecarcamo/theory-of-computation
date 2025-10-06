@@ -6,10 +6,10 @@ Este proyecto implementa y analiza la complejidad temporal de tres algoritmos di
 > **📝 Nota Importante:**  
 > El análisis de complejidad (inciso a de cada ejercicio) se encuentra disponible en:
 > - **Opción 6** del menú principal del programa
-> - **Archivo [`COMPLEJIDAD.md`](COMPLEJIDAD.md)** con el proceso detallado de cada ejercicio
+> - **Archivo [`COMPLEJIDAD_ejercicio1-3.md`](COMPLEJIDAD_ejercicio1-3.md)** con el proceso detallado de cada ejercicio
 >
 > **🎥 Video Explicativo:**  
-> [Ver video en YouTube](LINK_DEL_VIDEO_AQUI)
+> [Ver video en YouTube](https://youtu.be/gMaGesomW88)
 
 ---
 
