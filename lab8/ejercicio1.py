@@ -1,37 +1,36 @@
+if __name__ == "__main__":
+    print("Este archivo debe ejecutarse desde main.py")
+    print("Ejecuta: python main.py")
+    exit(0)
+
 import time
 import matplotlib.pyplot as plt
 import pandas as pd
 
 def function(n):
-    """
-    Implementación en Python del código C del ejercicio 1
-    """
     counter = 0
-    
-    for i in range(n // 2, n + 1):
-        for j in range(1, n - n // 2 + 1):
+    i = n // 2
+    while i <= n:
+        j = 1
+        while j + n // 2 <= n:
             k = 1
             while k <= n:
                 counter += 1
-                k *= 2
-    
+                k = k * 2
+            j += 1
+        i += 1
     return counter
 
 def measure_execution_time(n):
-    """
-    Mide el tiempo de ejecución de la función para un valor n dado
-    """
     start_time = time.time()
     result = function(n)
     end_time = time.time()
     execution_time = end_time - start_time
     return execution_time, result
 
-def main():
-    """
-    Función principal que ejecuta el profiling con diferentes tamaños de input
-    """
-    input_sizes = [1, 10, 100, 1000, 10000, 100000, 1000000]
+def main(input_sizes=None):
+    if input_sizes is None:
+        input_sizes = [1, 10, 100, 1000, 10000, 100000, 1000000]
     
     times = []
     results = []
@@ -63,7 +62,7 @@ def main():
     plt.plot(input_sizes, times, 'bo-', linewidth=2, markersize=8)
     plt.xlabel('Tamaño de Input (n)')
     plt.ylabel('Tiempo de Ejecución (segundos)')
-    plt.title('Complejidad Temporal: Tamaño de Input vs Tiempo de Ejecución')
+    plt.title('Ejercicio 1: Complejidad Temporal')
     plt.grid(True, alpha=0.3)
     plt.xscale('log')
     plt.yscale('log')
@@ -84,6 +83,3 @@ def main():
     
     df.to_csv('ejercicio1_resultados.csv', index=False)
     print("Resultados guardados en 'ejercicio1_resultados.csv'")
-
-if __name__ == "__main__":
-    main()

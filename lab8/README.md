@@ -13,6 +13,7 @@ lab8/
 ├── ejercicio1.py        # Ejercicio 1: O(n² log n)
 ├── ejercicio2.py        # Ejercicio 2: O(n)
 ├── ejercicio3.py        # Ejercicio 3: O(n²)
+├── requirements.txt     # Dependencias del proyecto
 ├── README.md            # Este archivo
 └── Lab8.pdf             # Documento con las especificaciones
 ```
@@ -28,26 +29,48 @@ lab8/
 ### Instalar dependencias
 
 ```bash
-pip install matplotlib pandas
+pip install -r requirements.txt
 ```
 
-O si usas `pip3`:
+O manualmente:
 
 ```bash
-pip3 install matplotlib pandas
+pip install matplotlib pandas
 ```
 
 ---
 
 ## 💻 Uso
 
-### Opción 1: Ejecutar el menú principal (Recomendado)
+### Ejecutar el programa principal
+
+**IMPORTANTE:** Todos los ejercicios deben ejecutarse desde `main.py`. Los archivos individuales (`ejercicio1.py`, `ejercicio2.py`, `ejercicio3.py`) no pueden ejecutarse de forma independiente.
+
+#### Ejecución normal (todos los tamaños de input):
 
 ```bash
 python main.py
 ```
 
-Esto abrirá un menú interactivo con las siguientes opciones:
+Esto ejecutará el profiling con los siguientes tamaños de input:
+- `1, 10, 100, 1000, 10000, 100000, 1000000`
+
+⚠️ **Advertencia:** Los tamaños grandes (1000+) pueden tardar mucho tiempo en ejecutarse.
+
+#### Ejecución rápida (solo números pequeños):
+
+```bash
+python main.py --omit_big_numbers
+```
+
+Esto ejecutará el profiling solo con:
+- `1, 10, 100`
+
+Esta opción es **recomendada para pruebas rápidas** ya que los números grandes pueden hacer que el programa tarde demasiado.
+
+### Menú interactivo
+
+El programa ofrece las siguientes opciones:
 
 1. **Ejecutar Ejercicio 1** - Analiza el algoritmo con complejidad O(n² log n)
 2. **Ejecutar Ejercicio 2** - Analiza el algoritmo con complejidad O(n)
@@ -56,14 +79,6 @@ Esto abrirá un menú interactivo con las siguientes opciones:
 5. **Comparar resultados** - Genera una gráfica comparativa de los 3 ejercicios
 6. **Ver análisis de complejidad** - Muestra el análisis detallado de cada ejercicio
 0. **Salir** - Cierra el programa
-
-### Opción 2: Ejecutar ejercicios individuales
-
-```bash
-python ejercicio1.py
-python ejercicio2.py
-python ejercicio3.py
-```
 
 ---
 
@@ -144,16 +159,15 @@ void function (int n) {
 
 ---
 
-## 🔬 Tamaños de Input Probados
+## 🔬 Tamaños de Input
 
-Cada ejercicio se prueba con los siguientes tamaños de input:
-- 1
-- 10
-- 100
-- 1,000
-- 10,000
-- 100,000
-- 1,000,000
+### Modo normal:
+- 1, 10, 100, 1000, 10000, 100000, 1000000
+
+### Modo `--omit_big_numbers`:
+- 1, 10, 100
+
+**Recomendación:** Usa `--omit_big_numbers` para pruebas rápidas, ya que los tamaños grandes pueden tardar varios minutos en ejecutarse.
 
 ---
 
@@ -176,15 +190,19 @@ Cada ejercicio se prueba con los siguientes tamaños de input:
 
 ---
 
-## 🎯 Ejemplo de Uso
+## 🎯 Ejemplos de Uso
+
+### Ejemplo 1: Ejecución rápida (recomendado para pruebas)
 
 ```bash
-$ python main.py
+$ python main.py --omit_big_numbers
 
 ======================================================================
                LABORATORIO 8 - TEORÍA DE COMPUTACIÓN
                   ANÁLISIS DE COMPLEJIDAD TEMPORAL
 ======================================================================
+⚠️  Modo: NÚMEROS GRANDES OMITIDOS (solo 1, 10, 100)
+    Para incluir todos los tamaños, ejecuta sin --omit_big_numbers
 
 ──────────────────────────────────────────────────────────────────────
 MENÚ PRINCIPAL:
@@ -199,6 +217,28 @@ MENÚ PRINCIPAL:
 ──────────────────────────────────────────────────────────────────────
 
 Selecciona una opción: 5
+```
+
+### Ejemplo 2: Ejecución completa (puede tardar varios minutos)
+
+```bash
+$ python main.py
+
+# Ejecutará con todos los tamaños: 1, 10, 100, 1000, 10000, 100000, 1000000
+```
+
+### Ejemplo 3: Ver ayuda
+
+```bash
+$ python main.py --help
+
+usage: main.py [-h] [--omit_big_numbers]
+
+Laboratorio 8 - Análisis de Complejidad Temporal
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --omit_big_numbers   Omite los tamaños grandes (1000, 10000, 100000, 1000000) para ejecución rápida
 ```
 
 ---

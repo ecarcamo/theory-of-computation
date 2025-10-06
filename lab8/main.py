@@ -1,11 +1,14 @@
 import os
 import sys
+import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
 
 import ejercicio1
 import ejercicio2
 import ejercicio3
+
+OMIT_BIG_NUMBERS = False
 
 def clear_screen():
     os.system('clear' if os.name == 'posix' else 'cls')
@@ -111,13 +114,18 @@ def show_analysis(exercise_num):
         print(f"  {i}. {line}")
     print("=" * 70)
 
+def get_input_sizes():
+    if OMIT_BIG_NUMBERS:
+        return [1, 10, 100]
+    return [1, 10, 100, 1000, 10000, 100000, 1000000]
+
 def compare_all_exercises():
     print("\n" + "=" * 70)
     print("COMPARACIÓN DE TODOS LOS EJERCICIOS")
     print("=" * 70)
     print("\nEjecutando profiling de los 3 ejercicios...")
     
-    input_sizes = [1, 10, 100, 1000, 10000, 100000, 1000000]
+    input_sizes = get_input_sizes()
     
     times_ex1 = []
     times_ex2 = []
@@ -126,8 +134,8 @@ def compare_all_exercises():
     print("\nProcesando datos...")
     for n in input_sizes:
         time1, _ = ejercicio1.measure_execution_time(n)
-        time2, _ = ejercicio2.measure_execution_time(n)
-        time3, _ = ejercicio3.measure_execution_time(n)
+        time2 = ejercicio2.measure_execution_time(n)
+        time3 = ejercicio3.measure_execution_time(n)
         
         times_ex1.append(time1)
         times_ex2.append(time2)
@@ -178,9 +186,6 @@ def compare_all_exercises():
     print("─" * 70)
 
 def run_exercise(exercise_num):
-    """
-    Ejecuta un ejercicio específico
-    """
     exercises = {
         1: ('Ejercicio 1', ejercicio1),
         2: ('Ejercicio 2', ejercicio2),
@@ -196,14 +201,12 @@ def run_exercise(exercise_num):
     print(f"EJECUTANDO {name.upper()}")
     print(f"{'=' * 70}\n")
     
-    module.main()
+    input_sizes = get_input_sizes()
+    module.main(input_sizes)
     
     print(f"\n✓ {name} completado exitosamente.")
 
 def run_all_exercises():
-    """
-    Ejecuta todos los ejercicios secuencialmente
-    """
     print("\n" + "=" * 70)
     print("EJECUTANDO TODOS LOS EJERCICIOS")
     print("=" * 70)
@@ -219,9 +222,6 @@ def run_all_exercises():
         compare_all_exercises()
 
 def show_analysis_menu():
-    """
-    Muestra el menú de análisis de complejidad
-    """
     print("\n" + "─" * 70)
     print("ANÁLISIS DE COMPLEJIDAD:")
     print("─" * 70)
@@ -252,12 +252,14 @@ def show_analysis_menu():
     input("\nPresiona Enter para continuar...")
 
 def main():
-    """
-    Función principal del programa
-    """
     while True:
         clear_screen()
         show_header()
+        
+        if OMIT_BIG_NUMBERS:
+            print("⚠️  Modo: NÚMEROS GRANDES OMITIDOS (solo 1, 10, 100)")
+            print("    Para incluir todos los tamaños, ejecuta sin --omit_big_numbers")
+        
         show_menu()
         
         choice = input("\nSelecciona una opción: ").strip()
@@ -287,6 +289,13 @@ def main():
             input("\nPresiona Enter para continuar...")
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Laboratorio 8 - Análisis de Complejidad Temporal')
+    parser.add_argument('--omit_big_numbers', action='store_true', 
+                        help='Omite los tamaños grandes (1000, 10000, 100000, 1000000) para ejecución rápida')
+    args = parser.parse_args()
+    
+    OMIT_BIG_NUMBERS = args.omit_big_numbers
+    
     try:
         main()
     except KeyboardInterrupt:
