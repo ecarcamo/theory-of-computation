@@ -3,6 +3,14 @@
 
 Este proyecto implementa y analiza la complejidad temporal de tres algoritmos diferentes utilizando Python.
 
+> **📝 Nota Importante:**  
+> El análisis de complejidad (inciso a de cada ejercicio) se encuentra disponible en:
+> - **Opción 6** del menú principal del programa
+> - **Archivo [`COMPLEJIDAD.md`](COMPLEJIDAD.md)** con el proceso detallado de cada ejercicio
+>
+> **🎥 Video Explicativo:**  
+> [Ver video en YouTube](LINK_DEL_VIDEO_AQUI)
+
 ---
 
 ## 📋 Estructura del Proyecto
@@ -13,9 +21,10 @@ lab8/
 ├── ejercicio1.py        # Ejercicio 1: O(n² log n)
 ├── ejercicio2.py        # Ejercicio 2: O(n)
 ├── ejercicio3.py        # Ejercicio 3: O(n²)
+├── COMPLEJIDAD.md       # Análisis detallado de complejidad (inciso a)
 ├── requirements.txt     # Dependencias del proyecto
 ├── README.md            # Este archivo
-└── Lab8.pdf             # Documento con las especificaciones
+└── Lab8.pdf             # Documento con los ejercicios a mano
 ```
 
 ---
@@ -79,6 +88,24 @@ El programa ofrece las siguientes opciones:
 5. **Comparar resultados** - Genera una gráfica comparativa de los 3 ejercicios
 6. **Ver análisis de complejidad** - Muestra el análisis detallado de cada ejercicio
 0. **Salir** - Cierra el programa
+
+---
+
+## 📐 Análisis de Complejidad (Inciso a)
+
+El análisis teórico de la complejidad temporal de cada ejercicio está disponible en:
+
+### 1. **Archivo COMPLEJIDAD.md**
+Contiene el análisis detallado con todos los pasos del proceso:
+- Análisis de cada bucle
+- Cálculos matemáticos
+- Notación Big-Oh
+- Comparación entre ejercicios
+
+📄 **[Ver COMPLEJIDAD.md](COMPLEJIDAD.md)**
+
+### 2. **Opción 6 del menú principal**
+Al ejecutar `python main.py`, selecciona la opción 6 para ver el análisis de complejidad de forma interactiva.
 
 ---
 
@@ -171,15 +198,6 @@ void function (int n) {
 
 ---
 
-## 📝 Características del Código
-
-### Principios aplicados:
-- ✅ **Clean Code**: Nombres descriptivos, funciones pequeñas
-- ✅ **DRY**: No repetición de código
-- ✅ **KISS**: Mantener la simplicidad
-- ✅ **Modularidad**: Cada ejercicio es un módulo independiente
-- ✅ **Documentación**: Docstrings en todas las funciones
-
 ### Funcionalidades:
 - 🎯 Medición precisa de tiempos de ejecución
 - 📊 Generación automática de gráficas
@@ -243,13 +261,3 @@ optional arguments:
 
 ---
 
-## 🤝 Autor
-
-Laboratorio 8 - Teoría de Computación
-Universidad - 6to Semestre
-
----
-
-## 📄 Licencia
-
-Este proyecto es parte de un trabajo académico.
