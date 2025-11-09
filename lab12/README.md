@@ -3,6 +3,10 @@
 ## Descripción General
 Este laboratorio consiste en resolver 4 ejercicios de programación utilizando Haskell en lugar de Python, lo cual otorga 2 puntos extra. Cada ejercicio hace uso intensivo de funciones lambda y paradigmas funcionales para manipular estructuras de datos.
 
+## Video Tutorial
+[![Ver video en YouTube](https://img.youtube.com/vi/UWt9biFijhs/0.jpg)](https://youtu.be/UWt9biFijhs)
+
+
 ## Requisitos
 - GHC (Glasgow Haskell Compiler) 9.6 o superior
 - Cabal o Stack (opcional, para gestión de proyectos)
