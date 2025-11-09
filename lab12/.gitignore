@@ -1,0 +1,29 @@
+# Archivos compilados
+*.hi
+*.o
+Main
+
+# Directorios de build
+dist/
+dist-newstyle/
+.stack-work/
+
+# Cabal
+cabal.project.local
+cabal.project.local~
+.ghc.environment.*
+
+# Stack
+.stack-work/
+stack.yaml.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema
+.DS_Store
+Thumbs.db
