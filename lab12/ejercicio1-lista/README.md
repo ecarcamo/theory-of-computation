@@ -29,7 +29,10 @@ key1:value1,key2:value2,key3:value3
 
 
 ## Requisitos
-- Leer el README general del laboratorio.
+Para ejecutar este programa, asegúrese de:
+- Tener GHC (Glasgow Haskell Compiler) instalado
+- Ver los requerimientos generales en el [README principal](../README.md)
+
 
 ## Uso
 Ejecutar el programa y el programa mostrará la lista original y las diferentes ordenaciones según las claves especificadas.
