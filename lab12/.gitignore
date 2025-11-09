@@ -1,7 +1,12 @@
 # Archivos compilados
 *.hi
 *.o
-Main
+
+# Ejecutables de los ejercicios
+ejercicio1
+ejercicio2
+ejercicio3
+ejercicio4
 
 # Directorios de build
 dist/
