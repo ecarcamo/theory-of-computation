@@ -1,0 +1,4 @@
+make:Nokia,model:216,color:Black
+make:Apple,model:2,color:Silver
+make:Huawei,model:50,color:Gold
+make:Samsung,model:7,color:Blue
