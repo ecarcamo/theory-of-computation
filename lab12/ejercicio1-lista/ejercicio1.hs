@@ -1,4 +1,4 @@
-import Data.List (sortBy, sort)
+import Data.List (sortBy, sort, nub)
 import Data.Ord (comparing)
 import Data.Maybe (fromMaybe)
 import Text.Read (readMaybe)
@@ -6,6 +6,14 @@ import Text.Read (readMaybe)
 
 type Diccionario = [(String, String)] -- los diccionarios son listas de pares en Haskell (palabra, definicion)
 type ListaDiccionarios = [Diccionario] -- una lista de diccionarios es una lista de listas de pares
+
+-- Obtener todas las keys únicas de una lista de diccionarios
+obtenerKeys :: ListaDiccionarios -> [String]
+obtenerKeys [] = []
+obtenerKeys dicts = 
+    let todasLasKeys = concatMap (map fst) dicts  -- Extrae todas las keys de todos los diccionarios
+    in nub todasLasKeys  -- Elimina duplicados
+
 
 obtenerValor :: String -> Diccionario ->  String
 -- lookup key dict, busca la key y devuelve Just valor o Nothing
@@ -68,17 +76,18 @@ main = do
     -- Leer los diccionarios desde el archivo
     diccionarios <- leerDiccionarios "diccionarios.txt"
     
+    -- Obtener automáticamente todas las keys
+    let keys = obtenerKeys diccionarios
+    
     putStrLn "=== Lista original de diccionarios ==="
-    mapM_ print diccionarios -- es como un for para imprimir
+    mapM_ print diccionarios
     
-    putStrLn "\n=== Ordenado por 'model' ==="
-    let ordenadoPorModel = ordenarPorKey "model" diccionarios
-    mapM_ print ordenadoPorModel
+    putStrLn $ "\n=== Keys detectadas: " ++ show keys ++ " ===\n"
     
-    putStrLn "\n=== Ordenado por 'make' ==="
-    let ordenadoPorMake = ordenarPorKey "make" diccionarios
-    mapM_ print ordenadoPorMake
-    
-    putStrLn "\n=== Ordenado por 'color' ==="
-    let ordenadoPorColor = ordenarPorKey "color" diccionarios
-    mapM_ print ordenadoPorColor
+    -- Ordenar por cada key automáticamente
+    mapM_ (\key -> do
+        putStrLn $ "=== Ordenado por '" ++ key ++ "' ==="
+        let ordenado = ordenarPorKey key diccionarios
+        mapM_ print ordenado
+        putStrLn ""  -- Línea en blanco
+        ) keys
