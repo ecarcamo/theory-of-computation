@@ -44,22 +44,32 @@ func (s *Simulator) Run(inputString string) {
 		// Imprimir la Descripción Instantánea (ID) en cada paso
 		fmt.Println(s.getInstantaneousDescription())
 
-		// 2. Comprobar si estamos en un estado de aceptación
-		if s.currentState == s.config.QStates.Final {
-			fmt.Println(">> Cadena ACEPTADA <<")
-			return // Termina la simulación
-		}
-
 		// 3. Encontrar la transición correspondiente
 		transition := s.findTransition()
+
+		// 4. Comprobar si la máquina se detiene
 		if transition == nil {
-			// Si no hay transición, la máquina se detiene
-			fmt.Println(">> Cadena RECHAZADA (no hay transición) <<")
+			// Si no hay transición, la máquina se detiene.
+			// AHORA comprobamos si el estado es final.
+			if s.currentState == s.config.QStates.Final {
+				fmt.Println(">> Cadena ACEPTADA (simulación detenida en estado final) <<")
+			} else {
+				fmt.Println(">> Cadena RECHAZADA (no hay transición) <<")
+			}
 			return // Termina la simulación
 		}
 
-		// 4. Aplicar la transición
+		// 5. Aplicar la transición
 		s.applyTransition(transition.Output)
+
+		// 6. CASO ESPECIAL: Si la transición nos LLEVA a un estado final
+		// Y la acción es 'S' (Stay), podemos asumir aceptación inmediata.
+		// Esto maneja el (q4, B) -> (q4, B, S)
+		if s.currentState == s.config.QStates.Final && transition.Output.TapeDisplacement == "S" {
+			fmt.Println(s.getInstantaneousDescription()) // Imprime el estado final
+			fmt.Println(">> Cadena ACEPTADA (transición a final 'S') <<")
+			return
+		}
 	}
 
 	// Si superamos los maxSteps, la rechazamos
