@@ -1,4 +1,5 @@
 # Máquina de Turing que reconoce a^n b^n c^n (con n >= 1)
+# VERSIÓN 3.0 (Formato YAML 100% en bloque)
 
 q_states:
   q_list:
@@ -6,9 +7,10 @@ q_states:
     - 'q1' # Encontré 'a', buscando 'b'
     - 'q2' # Encontré 'b', buscando 'c'
     - 'q3' # Regresando al inicio
-    - 'q4' # Estado final (aceptación)
+    - 'q4' # Estado final (verificación)
+    - 'q_trap' # Estado trampa (rechazo explícito)
   initial: 'q0'
-  final: 'q4'
+  final: 'q4' # q4 sigue siendo el UNICO estado final
 
 alphabet:
   - a
@@ -26,7 +28,6 @@ tape_alphabet:
 
 delta:
   # --- Paso 1: Encontrar 'a', marcarla X, buscar 'b' ---
-  # δ(q0, a) = (q1, X, R)
   - params:
       initial_state: 'q0'
       mem_cache_value:
@@ -38,7 +39,6 @@ delta:
       tape_displacement: R
 
   # --- Paso 2: Buscar 'b', marcarla Y, buscar 'c' ---
-  # δ(q1, a) = (q1, a, R)
   - params:
       initial_state: 'q1'
       mem_cache_value:
@@ -48,7 +48,6 @@ delta:
       mem_cache_value:
       tape_output: a
       tape_displacement: R
-  # δ(q1, Y) = (q1, Y, R)
   - params:
       initial_state: 'q1'
       mem_cache_value:
@@ -58,7 +57,6 @@ delta:
       mem_cache_value:
       tape_output: Y
       tape_displacement: R
-  # δ(q1, b) = (q2, Y, R)
   - params:
       initial_state: 'q1'
       mem_cache_value:
@@ -70,7 +68,6 @@ delta:
       tape_displacement: R
 
   # --- Paso 3: Buscar 'c', marcarla Z, regresar ---
-  # δ(q2, b) = (q2, b, R)
   - params:
       initial_state: 'q2'
       mem_cache_value:
@@ -80,7 +77,6 @@ delta:
       mem_cache_value:
       tape_output: b
       tape_displacement: R
-  # δ(q2, Z) = (q2, Z, R)
   - params:
       initial_state: 'q2'
       mem_cache_value:
@@ -90,7 +86,6 @@ delta:
       mem_cache_value:
       tape_output: Z
       tape_displacement: R
-  # δ(q2, c) = (q3, Z, L)
   - params:
       initial_state: 'q2'
       mem_cache_value:
@@ -102,8 +97,6 @@ delta:
       tape_displacement: L
 
   # --- Paso 4: Regresar (rebobinar) al primer X ---
-  # *** ESTAS SON LAS TRANSICIONES CORREGIDAS ***
-  # δ(q3, a) = (q3, a, L)
   - params:
       initial_state: 'q3'
       mem_cache_value:
@@ -113,7 +106,6 @@ delta:
       mem_cache_value:
       tape_output: a
       tape_displacement: L
-  # δ(q3, b) = (q3, b, L)
   - params:
       initial_state: 'q3'
       mem_cache_value:
@@ -123,7 +115,6 @@ delta:
       mem_cache_value:
       tape_output: b
       tape_displacement: L
-  # δ(q3, Y) = (q3, Y, L)
   - params:
       initial_state: 'q3'
       mem_cache_value:
@@ -133,7 +124,6 @@ delta:
       mem_cache_value:
       tape_output: Y
       tape_displacement: L
-  # δ(q3, Z) = (q3, Z, L)
   - params:
       initial_state: 'q3'
       mem_cache_value:
@@ -143,7 +133,6 @@ delta:
       mem_cache_value:
       tape_output: Z
       tape_displacement: L
-  # δ(q3, X) = (q0, X, R)
   - params:
       initial_state: 'q3'
       mem_cache_value:
@@ -155,7 +144,6 @@ delta:
       tape_displacement: R
 
   # --- Paso 5: Fin. Si no hay más 'a's, buscar el final ---
-  # δ(q0, Y) = (q4, Y, R)
   - params:
       initial_state: 'q0'
       mem_cache_value:
@@ -166,8 +154,7 @@ delta:
       tape_output: Y
       tape_displacement: R
       
-  # --- Paso 6: Verificación. Asegurarse de que solo queden Ys y Zs ---
-  # δ(q4, Y) = (q4, Y, R)
+  # --- Paso 6: Verificación (CORREGIDO) ---
   - params:
       initial_state: 'q4'
       mem_cache_value:
@@ -177,7 +164,6 @@ delta:
       mem_cache_value:
       tape_output: Y
       tape_displacement: R
-  # δ(q4, Z) = (q4, Z, R)
   - params:
       initial_state: 'q4'
       mem_cache_value:
@@ -187,7 +173,6 @@ delta:
       mem_cache_value:
       tape_output: Z
       tape_displacement: R
-  # δ(q4, B) = (q4, B, S) (Estado de aceptación)
   - params:
       initial_state: 'q4'
       mem_cache_value:
@@ -196,10 +181,40 @@ delta:
       final_state: 'q4' # Estado final
       mem_cache_value:
       tape_output: B
-      tape_displacement: S # Quédate aquí
+      tape_displacement: S
 
+  # --- Paso 7: Trampa ---
+  - params:
+      initial_state: 'q4'
+      mem_cache_value:
+      tape_input: a
+    output:
+      final_state: 'q_trap'
+      mem_cache_value:
+      tape_output: a
+      tape_displacement: S
+  - params:
+      initial_state: 'q4'
+      mem_cache_value:
+      tape_input: b
+    output:
+      final_state: 'q_trap'
+      mem_cache_value:
+      tape_output: b
+      tape_displacement: S
+  - params:
+      initial_state: 'q4'
+      mem_cache_value:
+      tape_input: c
+    output:
+      final_state: 'q_trap'
+      mem_cache_value:
+      tape_output: c
+      tape_displacement: S
+
+# Cadenas de prueba (longitud >= 5)
 simulation_strings:
-  - "aabbcc" # Aceptada
-  - "abc"    # Aceptada
-  - "aabcc"  # Rechazada
-  - "aabbc"  # Rechazada
+  - "aabbcc"      # Aceptada (long 6)
+  - "aaabbbccc"   # Aceptada (long 9)
+  - "aaabbcc"     # Rechazada (long 7)
+  - "aabbbcc"     # Rechazada (long 7)
