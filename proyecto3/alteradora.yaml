@@ -1,0 +1,61 @@
+# Máquina de Turing "Alteradora" (V3.0 - Complemento)
+# Cumple el requisito de alterar la cinta.
+# Cambia 'a' por 'b' y 'b' por 'a'.
+
+q_states:
+  q_list:
+    - 'q0' # Estado inicial, moviéndose a la derecha
+    - 'q_fin' # Estado final
+  initial: 'q0'
+  final: 'q_fin'
+
+alphabet:
+  - a
+  - b
+
+tape_alphabet:
+  - a
+  - b
+  - B # Blank
+
+# Esta MT no usa mem_cache_value.
+delta:
+  # --- Paso 1: Cambiar 'a' por 'b' y seguir ---
+  - params:
+      initial_state: 'q0'
+      mem_cache_value:
+      tape_input: a
+    output:
+      final_state: 'q0'
+      mem_cache_value:
+      tape_output: b # Cambia 'a' por 'b'
+      tape_displacement: R
+
+  # --- Paso 2: Cambiar 'b' por 'a' y seguir ---
+  - params:
+      initial_state: 'q0'
+      mem_cache_value:
+      tape_input: b
+    output:
+      final_state: 'q0'
+      mem_cache_value:
+      tape_output: a # Cambia 'b' por 'a'
+      tape_displacement: R
+
+  # --- Paso 3: Encontrar el final y terminar ---
+  - params:
+      initial_state: 'q0'
+      mem_cache_value:
+      tape_input: B
+    output:
+      final_state: 'q_fin' # Estado final
+      mem_cache_value:
+      tape_output: B
+      tape_displacement: S # Quedarse quieto
+
+# Cadenas de prueba (longitud >= 5)
+simulation_strings:
+  - "abbab"   # -> baaba
+  - "babaa"   # -> ababb
+  - "aaaaa"   # -> bbbbb
+  - "bbabb"   # -> aabaa
