@@ -1,0 +1,19 @@
+# Binarios compilados
+sim
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Binarios de Go
+*.test
+*.out
+
+# Archivos de backup
+*.backup
+*~
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db

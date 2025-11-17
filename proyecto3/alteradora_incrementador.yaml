@@ -1,0 +1,130 @@
+# Máquina de Turing Alteradora - Incrementador Binario
+# Incrementa un número binario en 1
+# Alfabeto: {0, 1}
+# Ejemplo: "101" -> "110"  (5 -> 6)
+#          "111" -> "1000" (7 -> 8)
+#          "1001" -> "1010" (9 -> 10)
+
+# Algoritmo:
+# 1. Ir al final del número (dígito menos significativo)
+# 2. Si es 0, cambiar a 1 y terminar
+# 3. Si es 1, cambiar a 0 y propagar el acarreo (carry) a la izquierda
+# 4. Si todos son 1's, añadir un 1 al inicio
+
+q_states:
+  q_list:
+    - 'q0'      # Estado inicial - ir al final
+    - 'q1'      # Encontró blank, retroceder al último dígito
+    - 'q2'      # Procesando acarreo (carry = 1)
+    - 'q_fin'   # Estado final
+  initial: 'q0'
+  final: 'q_fin'
+
+alphabet:
+  - '0'
+  - '1'
+
+tape_alphabet:
+  - '0'
+  - '1'
+  - B  # Blank
+
+delta:
+  # === FASE 1: Ir al final del número ===
+  - params:
+      initial_state: 'q0'
+      mem_cache_value:
+      tape_input: '0'
+    output:
+      final_state: 'q0'
+      mem_cache_value:
+      tape_output: '0'
+      tape_displacement: R
+
+  - params:
+      initial_state: 'q0'
+      mem_cache_value:
+      tape_input: '1'
+    output:
+      final_state: 'q0'
+      mem_cache_value:
+      tape_output: '1'
+      tape_displacement: R
+
+  # Encontró blank (final del número), retroceder
+  - params:
+      initial_state: 'q0'
+      mem_cache_value:
+      tape_input: B
+    output:
+      final_state: 'q1'
+      mem_cache_value:
+      tape_output: B
+      tape_displacement: L
+
+  # === FASE 2: Incrementar desde el final ===
+  # Si el último dígito es 0, cambiar a 1 y terminar (no hay acarreo)
+  - params:
+      initial_state: 'q1'
+      mem_cache_value:
+      tape_input: '0'
+    output:
+      final_state: 'q_fin'
+      mem_cache_value:
+      tape_output: '1'
+      tape_displacement: S
+
+  # Si el último dígito es 1, cambiar a 0 y propagar acarreo
+  - params:
+      initial_state: 'q1'
+      mem_cache_value:
+      tape_input: '1'
+    output:
+      final_state: 'q2'
+      mem_cache_value: '1'  # Guardar carry en caché
+      tape_output: '0'
+      tape_displacement: L
+
+  # === FASE 3: Propagar acarreo ===
+  # Si encuentra 0, cambiar a 1 y terminar
+  - params:
+      initial_state: 'q2'
+      mem_cache_value: '1'
+      tape_input: '0'
+    output:
+      final_state: 'q_fin'
+      mem_cache_value:
+      tape_output: '1'
+      tape_displacement: S
+
+  # Si encuentra 1, cambiar a 0 y seguir propagando
+  - params:
+      initial_state: 'q2'
+      mem_cache_value: '1'
+      tape_input: '1'
+    output:
+      final_state: 'q2'
+      mem_cache_value: '1'
+      tape_output: '0'
+      tape_displacement: L
+
+  # Si llega al inicio (blank izquierdo), hay overflow -> añadir 1
+  - params:
+      initial_state: 'q2'
+      mem_cache_value: '1'
+      tape_input: B
+    output:
+      final_state: 'q_fin'
+      mem_cache_value:
+      tape_output: '1'
+      tape_displacement: S
+
+# Cadenas de prueba (números binarios)
+simulation_strings:
+  - "0"        # 0 -> 1
+  - "1"        # 1 -> 10
+  - "10"       # 2 -> 11
+  - "101"      # 5 -> 110
+  - "111"      # 7 -> 1000
+  - "1001"     # 9 -> 1010
+  - "1111"     # 15 -> 10000

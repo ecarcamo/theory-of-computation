@@ -2,6 +2,18 @@
 
 Simulador de Máquinas de Turing (MT) escrito en Go que lee configuraciones desde archivos YAML y ejecuta simulaciones paso a paso mostrando la Descripción Instantánea (ID) de la cinta.
 
+## Tabla de Contenidos
+
+- [Requisitos](#requisitos)
+- [Comandos de Ejecución](#comandos-de-ejecución)
+- [Descripción de Archivos](#descripción-de-archivos)
+- [Formato de Salida](#formato-de-salida)
+- [Ejemplo Destacado: MT Alteradora Compleja](#ejemplo-destacado-mt-alteradora-compleja-incrementador-binario)
+- [Crear tu propio archivo YAML](#crear-tu-propio-archivo-yaml)
+- [Solución de Problemas](#solución-de-problemas)
+- [Notas Técnicas](#notas-técnicas)
+- [Referencias](#referencias)
+
 ---
 
 ## Requisitos
@@ -16,39 +28,23 @@ Simulador de Máquinas de Turing (MT) escrito en Go que lee configuraciones desd
 go version
 ```
 
-Si necesitas instalar Go: [https://go.dev/dl/](https://go.dev/dl/)
-
 ---
 
 ## Comandos de Ejecución
 
-### Opción 1: Ejecutar directamente (sin compilar)
+Ejecutar el simulador:
 
-Usa el archivo `reconocedora.yaml` por defecto:
 ```bash
-cd proyecto3
+# Usar reconocedora.yaml por defecto
 go run .
-```
 
-Especificar un archivo YAML personalizado:
-```bash
+# Especificar un archivo YAML
+go run . reconocedora.yaml
 go run . alteradora.yaml
+go run . alteradora_incrementador.yaml
 ```
 
-### Opción 2: Compilar y ejecutar
-
-Compilar el programa:
-```bash
-go build -o sim
-```
-
-Ejecutar el binario compilado:
-```bash
-./sim reconocedora.yaml
-./sim alteradora.yaml
-```
-
-### Instalar dependencias manualmente (opcional)
+### Instalar dependencias (opcional)
 
 ```bash
 go mod tidy
@@ -93,6 +89,9 @@ go mod tidy
 - **Constantes**:
   - `BlankSymbol = "B"`: Símbolo que representa espacios vacíos en la cinta.
   - `maxSteps = 1000`: Límite de pasos para evitar bucles infinitos.
+- **Características de visualización**:
+  - **Pausa animada**: Cada paso de la simulación tiene una pausa de 100ms (`time.Sleep(100 * time.Millisecond)`) para visualización clara en videos o demostraciones.
+  - Esto permite seguir el proceso paso a paso sin que la ejecución sea instantánea.
 - **Criterios de aceptación**:
   - Acepta si no hay transición y el estado actual es el estado final.
   - Acepta si una transición lleva al estado final con desplazamiento "S" (Stay).
@@ -120,7 +119,7 @@ go mod tidy
   - Alfabeto de cinta: {a, b, c, X, Y, Z, B}
 
 #### `alteradora.yaml`
-- **Tipo de MT**: Alteradora (modifica la cinta).
+- **Tipo de MT**: Alteradora simple (modifica la cinta).
 - **Funcionamiento**: Complemento de símbolos binarios.
   - Cambia 'a' por 'b'.
   - Cambia 'b' por 'a'.
@@ -135,6 +134,30 @@ go mod tidy
   - No usa `mem_cache_value`.
   - Alfabeto simple: {a, b}
   - Recorre la cinta de izquierda a derecha una sola vez.
+  - **Complejidad**: Baja (MT básica para demostración).
+
+#### `alteradora_incrementador.yaml`
+- **Tipo de MT**: Alteradora compleja (modifica la cinta).
+- **Funcionamiento**: Incrementador binario (suma 1 a un número binario).
+  - Lee un número binario de derecha a izquierda.
+  - Incrementa el número en 1.
+  - Maneja acarreo (carry) correctamente.
+  - Maneja overflow (ej: 111 → 1000).
+- **Estados**: q0 (ir al final), q1 (incrementar), q2 (propagar carry), q_fin (final).
+- **Cadenas de prueba**:
+  - `"0"` → `"1"` (0 → 1)
+  - `"1"` → `"10"` (1 → 2)
+  - `"10"` → `"11"` (2 → 3)
+  - `"101"` → `"110"` (5 → 6)
+  - `"111"` → `"1000"` (7 → 8)
+  - `"1001"` → `"1010"` (9 → 10)
+  - `"1111"` → `"10000"` (15 → 16)
+- **Características especiales**:
+  - **USA `mem_cache_value`**: Guarda el bit de acarreo ('1') durante la propagación.
+  - Alfabeto: {0, 1}
+  - Recorre la cinta de derecha a izquierda (orden natural para aritmética binaria).
+  - **Complejidad**: Media-Alta (demuestra manejo de memoria auxiliar y lógica aritmética).
+  - **Ideal para demostrar**: Uso avanzado del campo `mem_cache_value` requerido en el proyecto.
 
 #### `go.mod`
 - **Función**: Archivo de configuración del módulo Go.
@@ -223,6 +246,97 @@ Cargando configuración desde: 'reconocedora.yaml'
 
 ---
 
+## Ejemplo Destacado: MT Alteradora Compleja (Incrementador Binario)
+
+### Descripción General
+
+El archivo `alteradora_incrementador.yaml` implementa una **Máquina de Turing Alteradora** que realiza incremento binario (suma 1 a un número binario). Esta MT es significativamente más compleja que la alteradora simple y demuestra conceptos avanzados.
+
+### ¿Por qué es más compleja?
+
+| Característica | `alteradora.yaml` (Simple) | `alteradora_incrementador.yaml` (Compleja) |
+|----------------|---------------------------|-------------------------------------------|
+| **Uso de `mem_cache_value`** | ❌ No usa | ✅ **SÍ usa** (guarda bit de acarreo) |
+| **Lógica** | Mapeo 1:1 simple (a↔b) | Aritmética binaria con propagación de carry |
+| **Estados** | 2 estados | 4 estados |
+| **Dirección de recorrido** | Solo derecha (→) | Bidireccional (→ y ←) |
+| **Manejo de overflow** | N/A | ✅ Maneja overflow (111 → 1000) |
+| **Complejidad algorítmica** | O(n) trivial | O(n) con lógica condicional |
+
+### Algoritmo Implementado
+
+1. **Fase 0 (estado q0)**: Avanzar hasta el final del número (encontrar el símbolo blank)
+2. **Fase 1 (estado q1)**: Retroceder y leer el dígito menos significativo (último dígito)
+   - Si es `0` → cambiar a `1` y **terminar** (no hay acarreo)
+   - Si es `1` → cambiar a `0`, **guardar carry='1' en `mem_cache_value`**, y continuar a la izquierda
+3. **Fase 2 (estado q2)**: Propagar el acarreo hacia la izquierda
+   - Si encuentra `0` → cambiar a `1` y terminar
+   - Si encuentra `1` → cambiar a `0` y seguir propagando (mantener carry='1' en caché)
+   - Si llega al inicio (blank izquierdo) → escribir `1` y terminar (overflow)
+
+### Ejemplo de Uso de `mem_cache_value`
+
+```yaml
+# Transición que requiere y mantiene el acarreo en memoria
+- params:
+    initial_state: 'q2'
+    mem_cache_value: '1'  # ← Requiere que haya carry='1'
+    tape_input: '1'
+  output:
+    final_state: 'q2'
+    mem_cache_value: '1'  # ← Mantiene el carry para siguiente iteración
+    tape_output: '0'
+    tape_displacement: L
+```
+
+### Resultados de Prueba
+
+Todas las cadenas de prueba funcionan correctamente:
+
+| Entrada (Binario) | Decimal | Salida (Binario) | Decimal | Estado |
+|-------------------|---------|------------------|---------|--------|
+| `"0"` | 0 | `"1"` | 1 | ✅ Aceptada |
+| `"1"` | 1 | `"10"` | 2 | ✅ Aceptada |
+| `"10"` | 2 | `"11"` | 3 | ✅ Aceptada |
+| `"101"` | 5 | `"110"` | 6 | ✅ Aceptada |
+| `"111"` | 7 | `"1000"` | 8 | ✅ Aceptada |
+| `"1001"` | 9 | `"1010"` | 10 | ✅ Aceptada |
+| `"1111"` | 15 | `"10000"` | 16 | ✅ Aceptada |
+
+### Ejemplo de Ejecución Detallada
+
+Incrementando `"111"` (7) → `"1000"` (8):
+
+```
+--- Iniciando simulación para: '111' ---
+B [q0, B] 111B          # Estado inicial, avanzar al final
+B1 [q0, B] 11B          # Seguir avanzando
+B11 [q0, B] 1B          # Seguir avanzando
+B111 [q0, B] BB         # Encontró blank, retroceder
+B11 [q1, B] 1BB         # Leer último dígito (1)
+B1 [q2, 1] 10BB         # Cambió 1→0, carry='1' en caché, propagar
+B [q2, 1] 100BB         # Cambió 1→0, mantener carry='1', propagar
+B [q2, 1] B000BB        # Overflow: escribir 1 al inicio
+B [q_fin, B] 1000BB     # Estado final: resultado = "1000"
+>> Cadena ACEPTADA (transición a final 'S') <<
+```
+
+### Ventajas de esta MT
+
+1. **Cumple requisito de `mem_cache_value`**: Demuestra uso avanzado del campo de memoria auxiliar
+2. **Mayor complejidad**: Ideal para obtener puntos adicionales en rúbricas de evaluación
+3. **Ejemplo práctico**: No solo reconoce patrones, sino que **modifica la cinta con lógica aritmética**
+4. **Visualización clara**: Con la animación de 100ms por paso, se puede observar perfectamente la propagación del carry
+
+### Cómo Ejecutar
+
+```bash
+# Ejecutar directamente
+go run . alteradora_incrementador.yaml
+```
+
+---
+
 ## Crear tu propio archivo YAML
 
 ### Estructura básica:
@@ -272,31 +386,11 @@ simulation_strings:
 
 ---
 
-## Solución de Problemas
-
-### Error: "No se pudo leer el archivo"
-- Verifica que el archivo YAML existe en el directorio actual.
-- Proporciona la ruta correcta como argumento.
-
-### Error: "No se pudo parsear el archivo YAML"
-- Revisa la sintaxis YAML (indentación, comillas, estructura).
-- Asegúrate de que todos los campos obligatorios estén presentes.
-
-### La simulación no termina
-- El límite actual es 1000 pasos.
-- Si tu MT necesita más pasos, edita `maxSteps` en `simulador.go`.
-
-### Cadena rechazada inesperadamente
-- Verifica las transiciones en el archivo YAML.
-- Revisa la salida paso a paso (ID) para identificar dónde falla.
-- Asegúrate de que el estado final esté correctamente definido.
-
----
-
 ## Notas Técnicas
 
 - **Representación de la cinta**: Se usa un `map[int]string` para permitir expansión infinita en ambas direcciones.
 - **Símbolo Blank**: Definido como `"B"` en el código (puede modificarse en `simulador.go`).
+- **Velocidad de animación**: Cada paso tiene una pausa de 100ms para visualización. Ideal para grabación de videos o demostraciones en vivo. Ajustable modificando `time.Sleep()` en `simulador.go`.
 - **Estados con caché**: El campo `mem_cache_value` permite implementar MTs con memoria auxiliar.
 - **Comparación de transiciones**: Se compara estado, símbolo de cinta y valor de caché (maneja `nil` correctamente).
 
@@ -310,12 +404,8 @@ simulation_strings:
 
 ---
 
-## Autor
+## Autores
 
-Proyecto de Teoría de la Computación - 2025
-
----
-
-## Licencia
-
-Este proyecto es de uso educativo.
+Proyecto de Teoría de la Computación
+Esteban Enrique Caramo Urizar - 23016
+Ernesto David Ascencio Ramírez - 23009

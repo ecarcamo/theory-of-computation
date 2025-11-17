@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 // BlankSymbol define el caracter para representar un espacio vacío
@@ -9,11 +10,11 @@ const BlankSymbol = "B" // Puedes cambiarlo por "_" si prefieres
 
 // Simulator contiene el estado de una simulación en curso
 type Simulator struct {
-	config        TuringMachine // La configuración de la MT
-	tape          map[int]string  // La cinta, representada como un map
-	head          int             // Posición actual del cabezal
-	currentState  string        // Estado actual de la MT
-	memCacheValue *string         // El "valor en caché" que es parte del estado
+	config        TuringMachine  // La configuración de la MT
+	tape          map[int]string // La cinta, representada como un map
+	head          int            // Posición actual del cabezal
+	currentState  string         // Estado actual de la MT
+	memCacheValue *string        // El "valor en caché" que es parte del estado
 }
 
 // NewSimulator crea una nueva instancia de simulación
@@ -43,6 +44,9 @@ func (s *Simulator) Run(inputString string) {
 	for step := 0; step < maxSteps; step++ {
 		// Imprimir la Descripción Instantánea (ID) en cada paso
 		fmt.Println(s.getInstantaneousDescription())
+
+		// Pausa para visualización (100ms por paso)
+		time.Sleep(100 * time.Millisecond)
 
 		// 3. Encontrar la transición correspondiente
 		transition := s.findTransition()
@@ -160,16 +164,24 @@ func (s *Simulator) getInstantaneousDescription() string {
 		}
 		// Busca los verdaderos min/max
 		for k := range s.tape {
-			if k < min { min = k }
-			if k > max { max = k }
+			if k < min {
+				min = k
+			}
+			if k > max {
+				max = k
+			}
 		}
 	}
 	// Asegurarnos de que el cabezal esté dentro del rango visible
-	if s.head < min { min = s.head }
-	if s.head > max { max = s.head }
+	if s.head < min {
+		min = s.head
+	}
+	if s.head > max {
+		max = s.head
+	}
 
 	var id string
-	
+
 	// Formatea el estado actual [estado, caché]
 	cacheVal := BlankSymbol
 	if s.memCacheValue != nil {
@@ -191,10 +203,10 @@ func (s *Simulator) getInstantaneousDescription() string {
 			id += symbol
 		}
 	}
-    // Si la cabeza está más allá del final
-    if s.head > max+1 {
-         id += " " + stateStr + BlankSymbol
-    }
+	// Si la cabeza está más allá del final
+	if s.head > max+1 {
+		id += " " + stateStr + BlankSymbol
+	}
 
 	return id
 }
