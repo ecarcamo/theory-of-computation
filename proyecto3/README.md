@@ -2,6 +2,8 @@
 
 Simulador de Máquinas de Turing (MT) escrito en Go que lee configuraciones desde archivos YAML y ejecuta simulaciones paso a paso mostrando la Descripción Instantánea (ID) de la cinta.
 
+Video Explicativo: [¡Click Aqui!](https://www.youtube.com/watch?v=8qZZrmtvGC8)
+
 ## Tabla de Contenidos
 
 - [Requisitos](#requisitos)
